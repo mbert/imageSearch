@@ -1,0 +1,16 @@
+CMakeCache.txt
+CMakeFiles/
+Makefile
+backend/CMakeFiles/
+backend/Makefile
+backend/cmake_install.cmake
+backend/libBackend.a
+cmake_install.cmake
+webapp/CMakeFiles/
+webapp/Makefile
+webapp/cmake_install.cmake
+webapp/imageSearch.css
+webapp/imageSearch.css~
+webapp/imageSearch.wt
+webapp/images/
+
