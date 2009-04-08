@@ -1,1 +1,3 @@
-add_library(Backend Backend.cc)
+ADD_LIBRARY(Backend
+	Backend.cc
+  )

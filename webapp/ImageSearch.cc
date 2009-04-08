@@ -1,3 +1,8 @@
+#include "Div.h"
+#include "ImageSearch.h"
+
+#include <Backend.h>
+
 #include <Wt/WBreak>
 #include <Wt/WContainerWidget>
 #include <Wt/WText>
@@ -7,11 +12,6 @@
 #include <Wt/WPushButton>
 
 #include <iostream>
-
-#include <Backend.h>
-
-#include "Div.h"
-#include "ImageSearch.h"
 
 #define ROWS 250
 #define COLS 250

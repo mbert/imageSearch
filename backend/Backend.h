@@ -19,8 +19,8 @@ namespace ImageSearch
 
   private:
     std::string m_currentTempFile;
-    int sizeY;
-    int sizeX;
+    int m_sizeY;
+    int m_sizeX;
   };
 
 };

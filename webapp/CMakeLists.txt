@@ -1,7 +1,23 @@
-include_directories (${IMAGESEARCH_SOURCE_DIR}/backend)
+INCLUDE_DIRECTORIES(
+	${IMAGESEARCH_SOURCE_DIR}/backend
+  )
 
-link_directories (${IMAGESEARCH_BINARY_DIR}/backend)
+LINK_DIRECTORIES(
+	${IMAGESEARCH_BINARY_DIR}/backend
+  )
 
-add_executable (imageSearch.wt main.cc ImageSearch.cc Div.cc)
+ADD_EXECUTABLE(imageSearch.wt
+	main.cc
+	ImageSearch.cc
+	Div.cc
+  )
 
-target_link_libraries (imageSearch.wt wavelet Magick++ CxxUtil Backend wt wthttp) 
+TARGET_LINK_LIBRARIES(imageSearch.wt
+	Backend
+	wavelet
+	Magick++
+	jpeg
+	CxxUtil
+	wt
+	wthttp
+  ) 
