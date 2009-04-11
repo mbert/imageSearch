@@ -9,6 +9,7 @@ LINK_DIRECTORIES(
 ADD_EXECUTABLE(imageSearch.wt
 	main.cc
 	ImageSearch.cc
+	SearchResult.cc
 	Div.cc
   )
 
@@ -20,4 +21,5 @@ TARGET_LINK_LIBRARIES(imageSearch.wt
 	CxxUtil
 	wt
 	wthttp
+	pqxx
   ) 

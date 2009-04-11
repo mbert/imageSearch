@@ -15,29 +15,47 @@ namespace ImageSearch
 
     DBImage (unsigned long id,
 	     const std::string &fileName,
-	     int nRows, int nCols,
-	     const Features &featureVector)
+	     const Features &featureVectorY,
+	     const Features &featureVectorU,
+	     const Features &featureVectorV,
+	     float averageY,
+	     float averageU,
+	     float averageV)
       : m_id (id), m_fileName (fileName),
-      m_nRows (nRows), m_nCols (nCols), m_featureVector (featureVector) { }
+      m_featureVectorY (featureVectorY),
+      m_featureVectorU (featureVectorU),
+      m_featureVectorV (featureVectorV),
+      m_averageY (averageY), m_averageU (averageU), m_averageV (averageV) { }
 
     unsigned long getId (void) const { return m_id; }
     const std::string &getFilename (void) const { return m_fileName; }
-    int getNRows (void) const { return m_nRows; }
-    int getNCols (void) const { return m_nCols; }
-    const Features &getFeatures (void) const { return m_featureVector; }
+    const Features &getFeatureVectorY (void) const { return m_featureVectorY; }
+    const Features &getFeatureVectorU (void) const { return m_featureVectorU; }
+    const Features &getFeatureVectorV (void) const { return m_featureVectorV; }
+    float getAverageY (void) const { return m_averageY; }
+    float getAverageU (void) const { return m_averageU; }
+    float getAverageV (void) const { return m_averageV; }
 
     void setId (unsigned long id) { m_id = id; }
     void setFilename (std::string &fileName) { m_fileName = fileName; }
-    void setNRows (int nRows) { m_nRows = nRows; }
-    void setNCols (int nCols) { m_nCols = nCols; }
-    setFeatures (Features &featureVector) { m_featureVector = featureVector; }
+    void setFeatureVectorY (Features &features) { m_featureVectorY = features; }
+    void setFeatureVectorU (Features &features) { m_featureVectorU = features; }
+    void setFeatureVectorV (Features &features) { m_featureVectorV = features; }
+    void setAverageY (float averageY) { m_averageY = averageY; }
+    void setAverageU (float averageU) { m_averageU = averageU; }
+    void setAverageV (float averageV) { m_averageV = averageV; }
 
   private:
     unsigned long m_id;
     std::string m_fileName;
     int m_nRows;
     int m_nCols;
-    Features m_featureVector;
+    Features m_featureVectorY;
+    Features m_featureVectorU;
+    Features m_featureVectorV;
+    float m_averageY;
+    float m_averageU;
+    float m_averageV;
   };
 
   typedef std::vector<DBImage> DBImageList;

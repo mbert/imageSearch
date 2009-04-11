@@ -19,7 +19,7 @@ namespace ImageSearch
     std::string m_hostAddr;
     std::string m_dbName;
     std::string m_userName;
-    std::string m_password
+    std::string m_password;
   };
 
 };

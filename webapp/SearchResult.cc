@@ -1,5 +1,4 @@
 #include "SearchResult.h"
-#include "Div.h"
 
 #include <Wt/WText>
 #include <Wt/WImage>
@@ -11,12 +10,13 @@
 using namespace ImageSearch;
 
 SearchResult::SearchResult (Wt::WContainerWidget *parent)
+  : Div ("searchResult", parent)
 {
-  m_container = new Div ("searchResult", parent);
-  m_image = new Wt::WImage (m_container);
-  m_text = new Wt::WText (m_container);
-  m_anchor = new Wt::WAnchor (m_container);
-  resetImage ();
+  Div *imageDiv = new Div ("image", this);
+  m_image = new Wt::WImage (imageDiv);
+  Div *textDiv = new Div ("text", this);
+  m_text = new Wt::WText (textDiv);
+  m_anchor = new Wt::WAnchor (this);
 }
 
 SearchResult::~SearchResult (void)
@@ -32,12 +32,12 @@ SearchResult::setImage (const std::string &thumbnail,
   m_image->setResource(new Wt::WFileResource (mimeType, thumbnail));
   m_text->setText (text);
   m_anchor->setRef (anchor);
-  m_container->show ();
+  show ();
 }
 
 void
 SearchResult::resetImage (void)
 {
-  m_container->hide ();
+  hide ();
 }
 

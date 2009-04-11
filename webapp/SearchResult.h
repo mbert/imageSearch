@@ -1,6 +1,8 @@
 #ifndef SEARCH_RESULT_H
 #define SEARCH_RESULT_H
 
+#include "Div.h"
+
 #include <string>
 
 namespace Wt
@@ -13,8 +15,7 @@ namespace Wt
 
 namespace ImageSearch
 {
-  class Div;
-  class SearchResult
+  class SearchResult : public Div
   {
   public:
     SearchResult (Wt::WContainerWidget *parent);
@@ -25,7 +26,6 @@ namespace ImageSearch
 		   const std::string &anchor);
     void resetImage (void);
   private:
-    Div *m_container;
     Wt::WImage *m_image;
     Wt::WText *m_text;
     Wt::WAnchor *m_anchor;
