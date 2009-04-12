@@ -9,6 +9,7 @@ namespace ImageSearch
   class Database {
   public:
     virtual void save (const DBImage &image) = 0;
+    virtual int getLastId (void) = 0;
   };
 
 };

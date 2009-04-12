@@ -1,15 +1,17 @@
 #include "Backend.h"
-#include "PostgresQl.h"
+#include "postgresql/PostgresQl.h"
 
 #include <cxxutil/utils.h>
 
 #include <WImage/ColorImage.hh>
 #include <WImage/FileName.hh>
+#include <WTools/ImageComparison.hh>
 
 #include <unistd.h>
 #include <climits>
-
 #include <cstdio>
+#include <cmath>
+
 #include <stdexcept>
 #include <iostream>
 #include <memory>
@@ -24,16 +26,15 @@ using namespace ImageSearch;
 #define USERNAME "md"
 #define PASSWORD "md"
 
-static std::string
-guessMimeType (const std::string &fileName)
-{
-  FileName fn (fileName.c_str ());
-  return fn.guessedMimeType ();
-}
+#define DEFAULT_KEPT_COEFFS 50
+
+static Features lqToFeatureVector (const Image &img);
+
+static std::string guessMimeType (const std::string &fileName);
 
 ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
   : m_sizeY (THUMB_HEIGHT), m_sizeX (THUMB_WIDTH),
-    m_imageDbPrefix (imageDbPrefix)
+    m_imageDbPrefix (imageDbPrefix), m_nKeptCoeffs (DEFAULT_KEPT_COEFFS)
 {
   char buf[PATH_MAX];
   m_documentRoot = std::string (getcwd (buf, sizeof buf));
@@ -150,5 +151,72 @@ void
 ImageSearchBackend::saveDbImage (const DBImage &image)
 {
   m_database->save (image);
+}
+
+int
+ImageSearchBackend::getLastImageId (void)
+{
+  return m_database->getLastId ();
+}
+
+std::auto_ptr<DBImage>
+ImageSearchBackend::createDbImage (const std::string &path,
+				   int id, int rows, int cols)
+{
+  typedef std::auto_ptr<ColorImage> CiP;
+  typedef std::auto_ptr<Image> GiP;
+  CiP img (new ColorImage ());
+  img->read (path.c_str ());
+
+  CiP scaled (img->fitInto (rows, cols, true));
+  scaled->colormodel (cm_yuv);
+  scaled->write ("foo.ppm");
+  img.reset ();
+
+  GiP lY (ImageComparison::truncateForLq
+	  (scaled->channel (0), m_nKeptCoeffs, Haar));
+  Features fY = ::lqToFeatureVector (*lY);
+  float aY = lY->at (0, 0);
+  lY.reset ();
+
+  GiP lU (ImageComparison::truncateForLq
+	  (scaled->channel (1), m_nKeptCoeffs, Haar));
+  Features fU = ::lqToFeatureVector (*lU);
+  float aU = lU->at (0, 0);
+  lU.reset ();
+
+  GiP lV (ImageComparison::truncateForLq
+	  (scaled->channel (2), m_nKeptCoeffs, Haar));
+  Features fV = ::lqToFeatureVector (*lV);
+  float aV = lV->at (0, 0);
+  lV.reset ();
+
+
+  return std::auto_ptr<DBImage> (new DBImage (id, path,
+					      fY, fU, fV, aY, aU, aV));
+}
+
+#define SINGLE_BIT_AT(i) (((unsigned char)1) << (7 - i))
+
+static Features
+lqToFeatureVector (const Image &img)
+{
+  size_t size = (size_t)ceil (img.size () / 8.0);
+  Features result (size, (unsigned char)0);
+  for (int i = 0; i < img.size (); ++i)
+    {
+      // todo: only if non zero!
+      int byte = i / 8;
+      int bit = i % 8;
+      result[byte] |= SINGLE_BIT_AT (bit);
+    }
+  return result;
+}
+
+static std::string
+guessMimeType (const std::string &fileName)
+{
+  FileName fn (fileName.c_str ());
+  return fn.guessedMimeType ();
 }
 

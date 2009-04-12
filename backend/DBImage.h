@@ -48,8 +48,6 @@ namespace ImageSearch
   private:
     unsigned long m_id;
     std::string m_fileName;
-    int m_nRows;
-    int m_nCols;
     Features m_featureVectorY;
     Features m_featureVectorU;
     Features m_featureVectorV;

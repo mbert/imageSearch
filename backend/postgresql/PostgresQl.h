@@ -2,7 +2,11 @@
 #define IMAGE_SEARCH_POSTGRESQL_H
 
 #include "Database.h"
+
+#include <pqxx/connection>
+
 #include <string>
+#include <memory>
 
 namespace ImageSearch
 {
@@ -15,7 +19,9 @@ namespace ImageSearch
 		const std::string &password);
     virtual ~PostgresQl (void);
     virtual void save (const DBImage &image);
+    virtual int getLastId (void);
   private:
+    std::auto_ptr<pqxx::connection> createConnection (void);
     std::string m_hostAddr;
     std::string m_dbName;
     std::string m_userName;
