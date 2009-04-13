@@ -44,7 +44,7 @@ namespace ImageSearch
     BLImage getBlImage (const ImageScore &score);
     std::string m_currentTempFile;
     std::string m_documentRoot;
-    std::auto_ptr<ScoreTable> m_scoreTable;
+    static ScoreTable *m_scoreTable;
     int m_nDbImages;
     int m_sizeY;
     int m_sizeX;

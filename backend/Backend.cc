@@ -34,6 +34,8 @@ using namespace ImageSearch;
 #define USERNAME "md"
 #define PASSWORD "md"
 
+ScoreTable * ImageSearchBackend::m_scoreTable = NULL;
+
 static void fillFeatureVectors (const Image &img,
 				Features &posFeatures, Features &negFeatures);
 
@@ -47,13 +49,18 @@ ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
   m_documentRoot = std::string (getcwd (buf, sizeof buf));
   m_database = new PostgresQl (HOSTADDR, DB_NAME, USERNAME, PASSWORD,
 			       DB_IMAGE_ROWS, DB_IMAGE_COLS, KEPT_COEFFS);
-  DbImageList allImages = m_database->findAll ();
-  
-  m_nDbImages = allImages.size ();
-  m_scoreTable = std::auto_ptr<ScoreTable> (new ScoreTable (getDbImageRows (),
-							    getDbImageCols (),
-							    m_nKeptCoeffs,
-							    allImages));
+  if (m_scoreTable == NULL)
+    {
+      std::cout << "score table is uninitialised, doing this now." << std::endl;
+      DbImageList allImages = m_database->findAll ();
+      m_nDbImages = allImages.size ();
+      m_scoreTable = new ScoreTable (getDbImageRows (), getDbImageCols (),
+				     m_nKeptCoeffs, allImages);
+    }
+  else
+    {
+      std::cout << "using existing score table." << std::endl;
+    }
 }
 
 ImageSearchBackend::~ImageSearchBackend (void)
