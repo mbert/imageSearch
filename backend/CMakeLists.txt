@@ -4,4 +4,5 @@ INCLUDE_DIRECTORIES(
 ADD_LIBRARY(Backend
 	Backend.cc
 	postgresql/PostgresQl.cc
+	postgresql/PgSelect.cc
   )

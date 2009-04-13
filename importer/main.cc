@@ -12,9 +12,11 @@ main(int argc, char **argv)
 {
   std::cout << "importer start" << std::endl;
   ImageSearchBackend backend ("./");
-  int id = backend.getLastImageId () + 1;
+  int id = backend.getLastDbImageId () + 1;
   std::auto_ptr<DBImage> dbImage = backend.createDbImage ("lenaxxx.ppm",
-							  id, 256, 256);
+							  id++, 256, 256);
+  backend.saveDbImage (*dbImage);
+  dbImage = backend.createDbImage ("lenayyy.ppm", id++, 256, 256);
   backend.saveDbImage (*dbImage);
   std::cout << "importer successfully finished" << std::endl;
   return 0;

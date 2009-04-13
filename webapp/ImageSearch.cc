@@ -96,7 +96,7 @@ ImageSearchApplication::setupSearchResults (void)
 void
 ImageSearchApplication::updateSearchResults (void)
 {
-  BLImageIterator resIt = m_backend->performSearch ();
+  BlImageIterator resIt = m_backend->performSearch ();
   int i = 0;
   for (; i < MAX_RESULTS && m_backend->hasMore (resIt); ++i, ++resIt)
     {

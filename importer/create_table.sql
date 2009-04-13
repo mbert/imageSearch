@@ -1,9 +1,12 @@
-create table images_256_256 (
+create table images_256_256_50 (
   id int not null primary key,
   file_name varchar(256) unique not null,
-  feature_vector_y bytea not null,
-  feature_vector_u bytea not null,
-  feature_vector_v bytea not null,
+  features_y_plus bytea not null,
+  features_y_minus bytea not null,
+  features_u_plus bytea not null,
+  features_u_minus bytea not null,
+  features_v_plus bytea not null,
+  features_v_minus bytea not null,
   average_y real not null,
   average_u real not null,
   average_v real not null

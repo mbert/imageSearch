@@ -6,6 +6,7 @@
 
 #include <cxxutil/utils.h>
 
+#include <ctime>
 #include <string>
 
 namespace ImageSearch
@@ -33,13 +34,17 @@ namespace ImageSearch
       virtual ~InsertImage (void) {}
       void operator()(argument_type &t) {
 	t.exec("insert into " + m_tableName
-	       + "(id, file_name, feature_vector_y, feature_vector_u,"
-	       + " feature_vector_v, average_y, average_u, average_v) values ("
-	       + CxxUtil::itoa (m_image.getId ()) + ", '"
-	       + m_image.getFilename () + "', E'"
-	       + m_escaper (m_image.getFeatureVectorY()) + "'::bytea, E'"
-	       + m_escaper (m_image.getFeatureVectorU()) + "'::bytea, E'"
-	       + m_escaper (m_image.getFeatureVectorV()) + "'::bytea, "
+	       + "(id, file_name, features_y_plus, features_y_minus,"
+	       + " features_u_plus, features_u_minus, features_v_plus,"
+	       + " features_v_minus, average_y, average_u, average_v)"
+	       + " values (" + CxxUtil::itoa (m_image.getId ()) + ", '"
+	       + m_image.getFileName () + "', E'"
+	       + m_escaper (m_image.getFeaturesYPlus()) + "'::bytea, E'"
+	       + m_escaper (m_image.getFeaturesYMinus()) + "'::bytea, E'"
+	       + m_escaper (m_image.getFeaturesUPlus()) + "'::bytea, E'"
+	       + m_escaper (m_image.getFeaturesUMinus()) + "'::bytea, E'"
+	       + m_escaper (m_image.getFeaturesVPlus()) + "'::bytea, E'"
+	       + m_escaper (m_image.getFeaturesVMinus()) + "'::bytea, "
 	       + CxxUtil::dtoa (m_image.getAverageY ()) + ", "
 	       + CxxUtil::dtoa (m_image.getAverageU ()) + ", "
 	       + CxxUtil::dtoa (m_image.getAverageV ()) + ")");

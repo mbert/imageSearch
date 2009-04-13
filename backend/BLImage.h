@@ -14,6 +14,8 @@ namespace ImageSearch
       : m_thumbnail (thumbnail), m_mimeType (mimeType),
       m_text (text), m_targetLink (targetLink) { }
 
+    virtual ~BLImage (void) {}
+
     inline const std::string & getThumbnail (void) const {
       return m_thumbnail;
     }
@@ -34,8 +36,8 @@ namespace ImageSearch
     std::string m_targetLink;
   };
 
-  typedef std::vector<BLImage> BLImageList;
-  typedef BLImageList::const_iterator BLImageIterator;
+  typedef std::vector<BLImage> BlImageList;
+  typedef BlImageList::const_iterator BlImageIterator;
 };
 
 

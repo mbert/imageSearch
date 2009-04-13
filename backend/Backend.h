@@ -23,14 +23,16 @@ namespace ImageSearch
 			  const std::string &clientName);
     bool isCurrentImageValid (void) const;
     std::string guessMimeType (void) const;
-    BLImageIterator performSearch (void);
-    bool hasMore (const BLImageIterator &it) const;
+    BlImageIterator performSearch (void);
+    bool hasMore (const BlImageIterator &it) const;
     int getThumbHeight (void) const;
     int getThumbWidth (void) const;
 
     // database operations
     void saveDbImage (const DBImage &image);
-    int getLastImageId (void);
+    int getLastDbImageId (void);
+    DbImageList getAllDbImages (void);
+    std::auto_ptr<DBImage> getDbImageById (int id);
     std::auto_ptr<DBImage> createDbImage (const std::string &path,
 					  int id, int rows, int cols);
 
@@ -42,7 +44,7 @@ namespace ImageSearch
     int m_sizeY;
     int m_sizeX;
     int m_nKeptCoeffs;
-    BLImageList m_searchResults;
+    BlImageList m_searchResults;
     Database *m_database;
   };
 
