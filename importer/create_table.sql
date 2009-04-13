@@ -1,4 +1,4 @@
-create table images_256_256_50 (
+create table images_256_256_60 (
   id int not null primary key,
   file_name varchar(256) unique not null,
   features_y_plus bytea not null,

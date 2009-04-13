@@ -3,6 +3,7 @@
 
 #include "BLImage.h"
 #include "DBImage.h"
+#include "ScoreTable.h"
 
 #include <string>
 #include <memory>
@@ -31,6 +32,8 @@ namespace ImageSearch
     // database operations
     void saveDbImage (const DBImage &image);
     int getLastDbImageId (void);
+    int getDbImageRows (void) const;
+    int getDbImageCols (void) const;
     DbImageList getAllDbImages (void);
     std::auto_ptr<DBImage> getDbImageById (int id);
     std::auto_ptr<DBImage> createDbImage (const std::string &path,
@@ -38,12 +41,16 @@ namespace ImageSearch
 
   private:
     BLImage makeBlImage (const std::string &fileName, const std::string &text);
+    BLImage getBlImage (const ImageScore &score);
     std::string m_currentTempFile;
-    std::string m_imageDbPrefix;
     std::string m_documentRoot;
+    std::auto_ptr<ScoreTable> m_scoreTable;
+    int m_nDbImages;
     int m_sizeY;
     int m_sizeX;
+    int m_maxResults;
     int m_nKeptCoeffs;
+    std::string m_imageDbPrefix;
     BlImageList m_searchResults;
     Database *m_database;
   };

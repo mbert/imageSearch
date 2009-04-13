@@ -166,6 +166,7 @@ void
 ImageSearchApplication::showCurrentSearch (const std::string &fileName)
 {
   std::string mimeType = m_backend->guessMimeType ();
+  std::cout << "file name: " << fileName << std::endl;
   m_currentSelection->setResource (new Wt::WFileResource (mimeType, fileName));
   m_currentSelection->show ();
 }

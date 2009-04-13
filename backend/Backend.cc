@@ -1,5 +1,7 @@
 #include "Backend.h"
+#include "ImageScore.h"
 #include "postgresql/PostgresQl.h"
+#include "macros.h"
 
 #include <cxxutil/utils.h>
 
@@ -16,20 +18,21 @@
 #include <iostream>
 #include <memory>
 
+using namespace ImageSearch;
+
 #define THUMB_ROWS 250
 #define THUMB_COLS 250
 
 #define DB_IMAGE_COLS 256
 #define DB_IMAGE_ROWS 256
 
-using namespace ImageSearch;
+#define KEPT_COEFFS 60
+#define MAX_RESULTS 40
 
 #define DB_NAME "images"
 #define HOSTADDR "127.0.0.1"
 #define USERNAME "md"
 #define PASSWORD "md"
-
-#define KEPT_COEFFS 50
 
 static void fillFeatureVectors (const Image &img,
 				Features &posFeatures, Features &negFeatures);
@@ -37,13 +40,20 @@ static void fillFeatureVectors (const Image &img,
 static std::string guessMimeType (const std::string &fileName);
 
 ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
-  : m_sizeY (THUMB_ROWS), m_sizeX (THUMB_COLS),
-    m_imageDbPrefix (imageDbPrefix), m_nKeptCoeffs (KEPT_COEFFS)
+  : m_sizeY (THUMB_ROWS), m_sizeX (THUMB_COLS), m_maxResults (MAX_RESULTS),
+    m_nKeptCoeffs (KEPT_COEFFS), m_imageDbPrefix (imageDbPrefix)
 {
   char buf[PATH_MAX];
   m_documentRoot = std::string (getcwd (buf, sizeof buf));
   m_database = new PostgresQl (HOSTADDR, DB_NAME, USERNAME, PASSWORD,
 			       DB_IMAGE_ROWS, DB_IMAGE_COLS, KEPT_COEFFS);
+  DbImageList allImages = m_database->findAll ();
+  
+  m_nDbImages = allImages.size ();
+  m_scoreTable = std::auto_ptr<ScoreTable> (new ScoreTable (getDbImageRows (),
+							    getDbImageCols (),
+							    m_nKeptCoeffs,
+							    allImages));
 }
 
 ImageSearchBackend::~ImageSearchBackend (void)
@@ -62,8 +72,9 @@ ImageSearchBackend::setImage (const std::string &srcPath, const std::string &cli
       FileName fn (clientName.c_str ());
       std::auto_ptr<ColorImage> img (new ColorImage ());
       img->read (srcPath.c_str (), fn.guess ());
-      img->fitInto (m_sizeY, m_sizeX);
-      img->write (targetName.c_str ());
+      std::auto_ptr<ColorImage> scaled (img->fitInto ((int)(m_sizeY / 1.5),
+						      (int)(m_sizeX / 1.5)));
+      scaled->write (targetName.c_str ());
       m_currentTempFile = targetName;
     }
   catch (const std::exception &e)
@@ -106,7 +117,7 @@ ImageSearchBackend::guessMimeType (void) const
   return ::guessMimeType (m_currentTempFile);
 }
 
-ImageSearch::BLImage
+BLImage
 ImageSearchBackend::makeBlImage (const std::string &fileName,
 				 const std::string &text)
 {
@@ -124,31 +135,50 @@ ImageSearchBackend::performSearch (void)
   m_searchResults.clear ();
   if (isCurrentImageValid ())
     {
-      m_searchResults.push_back (makeBlImage ("044_ukraine_2008.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("035_ukraine_2008.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("dscn0351.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("019_ukraine_2004_07.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("011_ukraine_2005_01.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("020_ukraine_2005.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("021_ukraine_2008.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("020_ukraine_2008.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("046_ukraine_2008.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("002_ukraine_2004_07.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("011_ukraine_2006.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("013_ukraine_2008.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("003_ukraine_2005_01.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("010_ukraine_2004_07.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("038_ukraine_2006.jpg", "bla"));
-      m_searchResults.push_back (makeBlImage ("007_london_2004_11.jpg", "bla"));
+      ImageScoreList result (m_nDbImages);
+      for (int i = 0; i < result.size (); ++i)
+	{
+	  result[i].setId (i);
+	}
+      std::auto_ptr<ColorImage> image (new ColorImage ());
+      image->read (m_currentTempFile.c_str ());
+      m_scoreTable->query (*image, result);
+      std::sort (result.begin (), result.end ());
+      for (int i = 0; i < result.size () && i < m_maxResults; ++i)
+	{
+	  m_searchResults.push_back (getBlImage (result[i]));
+	}
     }
 
   return m_searchResults.begin ();
+}
+
+BLImage
+ImageSearchBackend::getBlImage (const ImageScore &score)
+{
+  std::auto_ptr<DBImage> dbImage (m_database->getById (score.getId ()));
+  std::string fileName = dbImage->getFileName ();
+  std::string text = "File: " + fileName
+    + ", score: " + CxxUtil::dtoa (score.getScore ());
+  return makeBlImage (fileName, text);
 }
 
 bool
 ImageSearchBackend::hasMore (const BlImageIterator &it) const
 {
   return m_searchResults.end () != it;
+}
+
+int
+ImageSearchBackend::getDbImageRows (void) const
+{
+  return DB_IMAGE_ROWS;
+}
+
+int
+ImageSearchBackend::getDbImageCols (void) const
+{
+  return DB_IMAGE_COLS;
 }
 
 
@@ -181,43 +211,45 @@ std::auto_ptr<DBImage>
 ImageSearchBackend::createDbImage (const std::string &path,
 				   int id, int rows, int cols)
 {
-  typedef std::auto_ptr<ColorImage> CiP;
-  typedef std::auto_ptr<Image> GiP;
-
-  CiP img (new ColorImage ());
+  std::auto_ptr<ColorImage> img (new ColorImage ());
   img->read (path.c_str ());
+  size_t pos = path.rfind ("/");
+  std::string fileName ((pos != std::string::npos && pos < path.size () - 1)
+			? path.substr (pos + 1) : path);
 
-  CiP scaled (img->fitInto (rows, cols, true));
+  std::auto_ptr<ColorImage> scaled (img->fitInto (rows, cols, true));
+  img.reset ();
   if (scaled->colormodel () != cm_yuv)
     {
       scaled->colormodel (cm_yuv);
     }
-  scaled->write ("foo.ppm");
+  //scaled->write ("foo.ppm");
 
-  GiP lY (ImageComparison::truncateForLq
-	  (scaled->channel (0), m_nKeptCoeffs, Haar));
+  std::auto_ptr<Image> lY (ImageComparison::truncateForLq
+			   (scaled->channel (0), m_nKeptCoeffs, Haar));
   Features pfY, nfY;
   ::fillFeatureVectors (*lY, pfY, nfY);
   float aY = lY->at (0, 0);
+  lY.reset ();
 
-  GiP lU (ImageComparison::truncateForLq
-	  (scaled->channel (1), m_nKeptCoeffs, Haar));
+  std::auto_ptr<Image> lU (ImageComparison::truncateForLq
+			   (scaled->channel (1), m_nKeptCoeffs, Haar));
   Features pfU, nfU;
   ::fillFeatureVectors (*lU, pfU, nfU);
   float aU = lU->at (0, 0);
+  lU.reset ();
 
-  GiP lV (ImageComparison::truncateForLq
-	  (scaled->channel (2), m_nKeptCoeffs, Haar));
+  std::auto_ptr<Image> lV (ImageComparison::truncateForLq
+			   (scaled->channel (2), m_nKeptCoeffs, Haar));
   Features pfV, nfV;
   ::fillFeatureVectors (*lV, pfV, nfV);
   float aV = lV->at (0, 0);
+  lV.reset ();
 
 
-  return std::auto_ptr<DBImage> (new DBImage (id, path, pfY, nfY, pfU, nfU,
+  return std::auto_ptr<DBImage> (new DBImage (id, fileName, pfY, nfY, pfU, nfU,
 					      pfV, nfV, aY, aU, aV));
 }
-
-#define SINGLE_BIT_AT(i) (((unsigned char)1) << (7 - i))
 
 static void
 fillFeatureVectors (const Image &img,
@@ -234,11 +266,11 @@ fillFeatureVectors (const Image &img,
       int bit = i % 8;
       if (img.at (i) > 0)
 	{
-	  posFeatures[byte] |= SINGLE_BIT_AT (bit);
+	  SET_BIT (posFeatures[byte], bit);
 	}
       else if (img.at (i) < 0)
 	{
-	  negFeatures[byte] |= SINGLE_BIT_AT (bit);
+	  SET_BIT (negFeatures[byte], bit);
 	}
     }
 }

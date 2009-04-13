@@ -43,7 +43,7 @@ Pg::SelectAll::~SelectAll (void)
 void
 Pg::SelectAll::operator() (argument_type &t)
 {
-  pqxx::result r = t.exec("select * from " + m_tableName);
+  pqxx::result r = t.exec("select * from " + m_tableName + " order by id");
   //r.at(0).at(0).to (m_result);
   for (pqxx::result::const_iterator it = r.begin (); it != r.end (); ++it)
     {
@@ -98,17 +98,17 @@ static void fillDbImage (DBImage &image, pqxx::result::tuple tup)
   image.setId (id);
   image.setFileName (fileName);
 
-  Features fyP ((const unsigned char*)byP.c_ptr ());
+  Features fyP ((const unsigned char*)byP.c_ptr (), byP.size ());
   image.setFeaturesYPlus (fyP);
-  Features fyM ((const unsigned char*)byM.c_ptr ());
+  Features fyM ((const unsigned char*)byM.c_ptr (), byP.size ());
   image.setFeaturesYMinus (fyM);
-  Features fuP ((const unsigned char*)buP.c_ptr ());
+  Features fuP ((const unsigned char*)buP.c_ptr (), byP.size ());
   image.setFeaturesUPlus (fuP);
-  Features fuM ((const unsigned char*)buM.c_ptr ());
+  Features fuM ((const unsigned char*)buM.c_ptr (), byP.size ());
   image.setFeaturesUMinus (fuM);
-  Features fvP ((const unsigned char*)bvP.c_ptr ());
+  Features fvP ((const unsigned char*)bvP.c_ptr (), byP.size ());
   image.setFeaturesVPlus (fvP);
-  Features fvM ((const unsigned char*)bvM.c_ptr ());
+  Features fvM ((const unsigned char*)bvM.c_ptr (), byP.size ());
   image.setFeaturesVMinus (fvM);
 
   image.setAverageY (averageY);

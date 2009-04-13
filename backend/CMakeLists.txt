@@ -3,6 +3,7 @@ INCLUDE_DIRECTORIES(
   )
 ADD_LIBRARY(Backend
 	Backend.cc
+	ScoreTable.cc
 	postgresql/PostgresQl.cc
 	postgresql/PgSelect.cc
   )
