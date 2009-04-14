@@ -4,6 +4,8 @@
 #include <WImage/ColorImage.hh>
 #include <WTools/ImageComparison.hh>
 
+#include <boost/timer.hpp>
+
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
@@ -96,6 +98,7 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
   static const float weightU[6] = { 15.25, 0.92, 0.53, 0.26, 0.14, 0.07 };
   static const float weightV[6] = { 22.62, 0.40, 0.73, 0.25, 0.15, 0.38 };
 
+  boost::timer timer;
   std::auto_ptr<ColorImage> scaled (image.fitInto (m_rows, m_cols, true));
   if (scaled->colormodel () != cm_yuv)
     {
@@ -105,21 +108,37 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
   std::auto_ptr<ImageInformation> lY (ImageComparison::imageInfoForLq
 				      (scaled->channel (0),
 				       m_nKeptCoeffs, Haar));
-  querySingleColor (*lY, scores, m_averageY, m_positiveY, m_negativeY, weightY);
-  lY.reset ();
-
   std::auto_ptr<ImageInformation> lU (ImageComparison::imageInfoForLq
 				      (scaled->channel (1),
 				       m_nKeptCoeffs, Haar));
-  querySingleColor (*lU, scores, m_averageU, m_positiveU, m_negativeU, weightU);
-  lU.reset ();
-
   std::auto_ptr<ImageInformation> lV (ImageComparison::imageInfoForLq
 				      (scaled->channel (2),
 				       m_nKeptCoeffs, Haar));
+
+  int elapsed = (int)(timer.elapsed () * 1000);
+  std::cout << "creating feature vector from the the image took "
+	    << elapsed << " milliseconds." << std::endl;
+  timer.restart ();
+
+  querySingleColor (*lY, scores, m_averageY, m_positiveY, m_negativeY, weightY);
+  lY.reset ();
+
+  querySingleColor (*lU, scores, m_averageU, m_positiveU, m_negativeU, weightU);
+  lU.reset ();
+
   querySingleColor (*lV, scores, m_averageV, m_positiveV, m_negativeV, weightV);
   lV.reset ();
 
+  elapsed = (int)(timer.elapsed () * 1000);
+  std::cout << "querying closest matches from all " << m_nImages
+	    << " images took " << elapsed << " milliseconds." << std::endl;
+  timer.restart ();
+
+  std::sort (scores.begin (), scores.end ());
+
+  elapsed = (int)(timer.elapsed () * 1000);
+  std::cout << "sorting the query results took "
+	    << elapsed << " milliseconds." << std::endl;
 }
 
 int

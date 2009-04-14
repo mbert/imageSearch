@@ -5,6 +5,8 @@
 
 #include <cxxutil/utils.h>
 
+#include <boost/timer.hpp>
+
 #include <WImage/ColorImage.hh>
 #include <WImage/FileName.hh>
 #include <WTools/ImageComparison.hh>
@@ -150,11 +152,14 @@ ImageSearchBackend::performSearch (void)
       std::auto_ptr<ColorImage> image (new ColorImage ());
       image->read (m_currentTempFile.c_str ());
       m_scoreTable->query (*image, result);
-      std::sort (result.begin (), result.end ());
+      boost::timer timer;
       for (int i = 0; i < result.size () && i < m_maxResults; ++i)
 	{
 	  m_searchResults.push_back (getBlImage (result[i]));
 	}
+      int elapsed = (int)(timer.elapsed () * 1000);
+      std::cout << "loading the images took "
+		<< elapsed << " milliseconds." << std::endl;
     }
 
   return m_searchResults.begin ();
