@@ -23,7 +23,7 @@ ScoreTable::ScoreTable (int rows, int cols, int nKeptCoeffs,
   m_lqcache.resize (MAX (m_rows, m_cols));
   for (int i = 0; i < m_lqcache.size (); i++)
     {
-      m_lqcache[i].init = false;
+      m_lqcache[i] = (int)floor (log ((double)i) / log ((double)2));
     }
   m_bufSize = m_scoreListPerPixelSize * m_rows * m_cols;
   m_averageY.resize (m_nImages);
@@ -120,14 +120,17 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
 	    << elapsed << " milliseconds." << std::endl;
   timer.restart ();
 
-  querySingleColor (*lY, scores, m_averageY, m_positiveY, m_negativeY, weightY);
-  lY.reset ();
+  for (int i = 0; i < scores.size () ; ++i)
+    {
+      querySingleColor (*lY, scores[i], m_averageY[i], m_positiveY,
+			m_negativeY, weightY);
 
-  querySingleColor (*lU, scores, m_averageU, m_positiveU, m_negativeU, weightU);
-  lU.reset ();
+      querySingleColor (*lU, scores[i], m_averageU[i], m_positiveU,
+			m_negativeU, weightU);
 
-  querySingleColor (*lV, scores, m_averageV, m_positiveV, m_negativeV, weightV);
-  lV.reset ();
+      querySingleColor (*lV, scores[i], m_averageV[i], m_positiveV,
+			m_negativeV, weightV);
+    }
 
   elapsed = (int)(timer.elapsed () * 1000);
   std::cout << "querying closest matches from all " << m_nImages
@@ -166,28 +169,24 @@ ScoreTable::vectorStart (const CoeffInformation &ci)
 
 void
 ScoreTable::querySingleColor (ImageInformation &truncated,
-			      ImageScoreList &scores,
-			      const std::vector<float> &averages,
+			      ImageScore &score,
+			      float average,
 			      const unsigned char *positives,
 			      const unsigned char *negatives,
 			      const float weights[])
 {
   CoeffInformation ci;
-  for (int i = 0; i < scores.size () ; ++i)
+
+  score.addToScore (weights[0] * (::abs (truncated.at(0).val () - average)));
+  for (int j = 1; j < truncated.size (); ++j)
     {
-      scores[i].addToScore (weights[0] * (::abs (truncated.at(0).val ()
-						 - averages[i])));
-      for (int j = 1; j < truncated.size (); ++j)
+      for (int k = 0; k < m_nImages; ++k)
 	{
-	  for (int k = 0; k < m_nImages; ++k)
+	  ci = truncated.at(j);
+	  if (ci.val () > 0 && isSet (ci, k, positives)
+	      || isSet (ci, k, negatives))
 	    {
-	      ci = truncated.at(j);
-	      if (ci.val () > 0 && isSet (ci, k, positives)
-		  || isSet (ci, k, negatives))
-		{
-		  scores[i].subFromScore (weights[bin (ci.ypos (),
-						       ci.xpos ())]);
-		}
+	      score.subFromScore (weights[bin (ci.ypos (), ci.xpos ())]);
 	    }
 	}
     }
@@ -197,11 +196,6 @@ ScoreTable::querySingleColor (ImageInformation &truncated,
 int
 ScoreTable::getLevel (int i)
 {
-  if (!m_lqcache[i].init)
-    {
-      m_lqcache[i].init = true;
-      m_lqcache[i].val = (int)floor (log ((double)i) / log ((double)2));
-    }
-  return m_lqcache[i].val;
+  return m_lqcache[i];
 }
 

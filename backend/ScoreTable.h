@@ -22,16 +22,12 @@ namespace ImageSearch
     void query (const ColorImage &image, ImageScoreList &scores);
   private:
     void querySingleColor (ImageInformation &truncated,
-			   ImageScoreList &scores,
-			   const std::vector<float> &averages,
+			   ImageScore &score,
+			   float average,
 			   const unsigned char *positives,
 			   const unsigned char *negatives,
 			   const float weights[]);
-    typedef struct logvals {
-      int val;
-      bool init;
-    } LogVals;
-    std::vector<LogVals> m_lqcache;
+    std::vector<int> m_lqcache;
     int getLevel (int i);
     int bin (int y, int x);
     bool isSet (const CoeffInformation &ci, int pos,
