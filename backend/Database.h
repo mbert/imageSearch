@@ -5,6 +5,8 @@
 
 #include <memory>
 
+// TODO try and test hiberlite, sqlite
+
 namespace ImageSearch
 {
 

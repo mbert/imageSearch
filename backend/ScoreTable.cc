@@ -120,6 +120,7 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
 	    << elapsed << " milliseconds." << std::endl;
   timer.restart ();
 
+  CoeffInformation ci;
   for (int i = 0; i < scores.size () ; ++i)
     {
       querySingleColor (*lY, scores[i], m_averageY[i], m_positiveY,
@@ -130,6 +131,7 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
 
       querySingleColor (*lV, scores[i], m_averageV[i], m_positiveV,
 			m_negativeV, weightV);
+
     }
 
   elapsed = (int)(timer.elapsed () * 1000);
@@ -183,6 +185,9 @@ ScoreTable::querySingleColor (ImageInformation &truncated,
       for (int k = 0; k < m_nImages; ++k)
 	{
 	  ci = truncated.at(j);
+	  // feature vector: [01] (negative) [10] positive per pixels pos
+	  // score table: 3 instead of 6 arrays, each organised in [00]/[01]/[10] 
+	  // tuples according to feature vector, then if ((x & y) != 0) ...
 	  if (ci.val () > 0 && isSet (ci, k, positives)
 	      || isSet (ci, k, negatives))
 	    {
