@@ -42,6 +42,7 @@ namespace ImageSearch
   private:
     BLImage makeBlImage (const std::string &fileName, const std::string &text);
     BLImage getBlImage (const ImageScore &score);
+    void initScoreTable (void);
     std::string m_currentTempFile;
     std::string m_documentRoot;
     static ScoreTable *m_scoreTable;

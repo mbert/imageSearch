@@ -8,6 +8,7 @@ namespace ImageSearch
 
   class ImageScore {
   public:
+    ImageScore (int id) : m_id (id), m_score (0) {}
     ImageScore (int id, float score) : m_id (id), m_score (score) {}
     ImageScore () : m_id (-1), m_score (0) {}
     virtual ~ImageScore (void) {}

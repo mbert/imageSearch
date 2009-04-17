@@ -6,6 +6,7 @@
 #include <cxxutil/utils.h>
 
 #include <boost/timer.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <WImage/ColorImage.hh>
 #include <WImage/FileName.hh>
@@ -36,6 +37,7 @@ using namespace ImageSearch;
 #define USERNAME "md"
 #define PASSWORD "md"
 
+boost::mutex scoreTableMutex;
 ScoreTable * ImageSearchBackend::m_scoreTable = NULL;
 
 static void fillFeatureVectors (const Image &img,
@@ -51,17 +53,47 @@ ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
   m_documentRoot = std::string (getcwd (buf, sizeof buf));
   m_database = new PostgresQl (HOSTADDR, DB_NAME, USERNAME, PASSWORD,
 			       DB_IMAGE_ROWS, DB_IMAGE_COLS, KEPT_COEFFS);
+  if (m_imageDbPrefix.size () > 0)
+    {
+      initScoreTable ();
+    }
+  else
+    {
+      std::cout << "no image db prefix given, assuming minimal mode."
+		<< std::endl;
+    }
+}
+
+void
+ImageSearchBackend::initScoreTable (void)
+{
   if (m_scoreTable == NULL)
     {
-      std::cout << "score table is uninitialised, doing this now." << std::endl;
-      DbImageList allImages = m_database->findAll ();
-      m_nDbImages = allImages.size ();
-      m_scoreTable = new ScoreTable (getDbImageRows (), getDbImageCols (),
-				     m_nKeptCoeffs, allImages);
+      boost::mutex::scoped_lock lock(scoreTableMutex);
+      if (m_scoreTable == NULL)
+	{
+	  std::cout << "score table is uninitialised, doing this now."
+		    << std::endl;
+	  DbImageList allImages = m_database->findAll ();
+	  m_nDbImages = allImages.size ();
+	  m_scoreTable = new ScoreTable (getDbImageRows (), getDbImageCols (),
+					 m_nKeptCoeffs, allImages);
+	}
+      else
+	{
+	  std::cout << "seems like someone else's just created the score table."
+		    << std::endl;
+	  m_nDbImages = -1;
+	}
     }
   else
     {
       std::cout << "using existing score table." << std::endl;
+      m_nDbImages = -1;
+    }
+  if (m_nDbImages < 0)
+    {
+      m_nDbImages = m_database->getLastId () + 1;
     }
 }
 
@@ -144,11 +176,12 @@ ImageSearchBackend::performSearch (void)
   m_searchResults.clear ();
   if (isCurrentImageValid ())
     {
-      ImageScoreList result (m_nDbImages);
-      for (int i = 0; i < result.size (); ++i)
+      ImageScoreList result;
+      for (int i = 0; i < m_nDbImages; ++i)
 	{
-	  result[i].setId (i);
+	  result.push_back (ImageScore (i));
 	}
+      assert (result.size () == m_nDbImages);
       std::auto_ptr<ColorImage> image (new ColorImage ());
       image->read (m_currentTempFile.c_str ());
       m_scoreTable->query (*image, result);

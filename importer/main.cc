@@ -11,7 +11,7 @@ int
 main(int argc, char **argv)
 {
   std::cout << "importer start" << std::endl;
-  ImageSearchBackend backend ("./");
+  ImageSearchBackend backend ("");
   int id = backend.getLastDbImageId () + 1;
   const int rows = backend.getDbImageRows ();
   const int cols = backend.getDbImageCols ();

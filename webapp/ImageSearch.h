@@ -35,6 +35,7 @@ namespace ImageSearch
 
       void uploadFile (void);
       void search (void);
+      void fileTooLarge (void);
       void enableSearchButton (void);
       void showCurrentSearch (const std::string &fileName);
       void hideCurrentSearch (void);

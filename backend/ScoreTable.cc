@@ -19,7 +19,7 @@ ScoreTable::ScoreTable (int rows, int cols, int nKeptCoeffs,
   : m_rows (rows), m_cols (cols),
     m_nKeptCoeffs (nKeptCoeffs), m_nImages (images.size ())
 {
-  m_scoreListPerPixelSize = (int)::ceil (m_nImages / 8);
+  m_scoreListPerPixelSize = (int)::ceil (m_nImages / 8.0);
   m_lqcache.resize (MAX (m_rows, m_cols));
   for (int i = 0; i < m_lqcache.size (); i++)
     {
@@ -66,10 +66,10 @@ ScoreTable::addImageFeatureVector (int index, const Features &src,
   for (int i = 0; i < size; ++i)
     {
       int vectorStart = m_scoreListPerPixelSize * i;
-      assert (vectorStart + destByte <= m_bufSize);
+      assert (vectorStart + destByte < m_bufSize);
       srcByte = i / 8;
       srcBit = i % 8;
-      assert (srcByte <= src.size ());
+      assert (srcByte < src.size ());
       if (IS_BIT_SET (src[srcByte], srcBit))
 	{
 	  SET_BIT (dest[vectorStart + destByte], destBit);

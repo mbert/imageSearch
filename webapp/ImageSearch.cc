@@ -76,6 +76,8 @@ ImageSearchApplication::setupInputs (void)
     (SLOT (this, ImageSearchApplication::search));
   m_fileUpload->changed.connect
     (SLOT (this, ImageSearchApplication::enableSearchButton));
+  m_fileUpload->fileTooLarge.connect
+    (SLOT (this, ImageSearchApplication::fileTooLarge));
   m_searchButton->clicked.connect
     (SLOT (this, ImageSearchApplication::uploadFile));
 }
@@ -154,6 +156,15 @@ ImageSearchApplication::search (void)
 
 
 void
+ImageSearchApplication::fileTooLarge (void)
+{
+  m_resultText->setStyleClass ("error");
+  m_resultText->setText ("Image file too large.");
+  hideCurrentSearch ();
+}
+
+
+void
 ImageSearchApplication::enableSearchButton (void)
 {
   if (!m_searchButton->isEnabled ())
@@ -166,8 +177,8 @@ void
 ImageSearchApplication::showCurrentSearch (const std::string &fileName)
 {
   std::string mimeType = m_backend->guessMimeType ();
-  std::cout << "file name: " << fileName << std::endl;
-  m_currentSelection->setResource (new Wt::WFileResource (mimeType, fileName));
+  Wt::WFileResource *resource = new Wt::WFileResource (mimeType, fileName);
+  m_currentSelection->setResource (resource);
   m_currentSelection->show ();
 }
 
