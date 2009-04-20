@@ -19,11 +19,11 @@ namespace ImageSearch
 		const std::string &password,
 		int dbImageRows, int dbImageCols, int nKeptCoeffs);
     virtual ~PostgresQl (void);
-    virtual void save (const DBImage &image);
-    virtual int getLastId (void);
-    virtual DbImageList findAll (void);
-    virtual std::auto_ptr<DBImage> getById (int id);
   private:
+    virtual void p_save (const DBImage &image);
+    virtual int p_getLastId (void);
+    virtual DbImageList p_findAll (void);
+    virtual std::auto_ptr<DBImage> p_getById (int id);
     std::string getTableName (void);
     std::auto_ptr<pqxx::connection> createConnection (void);
     std::string m_hostAddr;

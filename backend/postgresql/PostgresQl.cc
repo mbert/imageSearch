@@ -36,7 +36,7 @@ PostgresQl::createConnection (void)
 }
 
 void
-PostgresQl::save (const DBImage &image)
+PostgresQl::p_save (const DBImage &image)
 {
   try
     {
@@ -54,7 +54,7 @@ PostgresQl::save (const DBImage &image)
 }
 
 int
-PostgresQl::getLastId (void)
+PostgresQl::p_getLastId (void)
 {
   try
     {
@@ -74,7 +74,7 @@ PostgresQl::getLastId (void)
 }
 
 DbImageList
-PostgresQl::findAll (void)
+PostgresQl::p_findAll (void)
 {
   DbImageList result;
   try
@@ -95,7 +95,7 @@ PostgresQl::findAll (void)
 }
 
 std::auto_ptr<DBImage>
-PostgresQl::getById (int id)
+PostgresQl::p_getById (int id)
 {
   std::auto_ptr<DBImage> result (new DBImage ());
   try
