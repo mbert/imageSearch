@@ -125,20 +125,20 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
     {
       querySingleColor (*lY, scores[i], m_averageY[i], m_positiveY,
 			m_negativeY, weightY);
-      scores[i].setYScore(scores[i].getScore ());
-      if (scores[i].getYScore () > 0)
-	{
+      //scores[i].setYScore(scores[i].getScore ());
+      //if (scores[i].getYScore () > 0)
+	//{
 	  // positive score? skip any further calculation and make sure
 	  // this image does not get ranked high...
-	  scores[i].setScore (scores[i].getScore () * 3);
-	}
-      else
-	{
+	  //scores[i].setScore (scores[i].getScore () * 3);
+	//}
+      //else
+	//{
 	  querySingleColor (*lU, scores[i], m_averageU[i], m_positiveU,
 			    m_negativeU, weightU);
 	  querySingleColor (*lV, scores[i], m_averageV[i], m_positiveV,
 			    m_negativeV, weightV);
-	}
+	//}
 
     }
 
