@@ -14,8 +14,10 @@ namespace ImageSearch
     virtual ~ImageScore (void) {}
     inline int getId (void) const { return m_id; }
     inline float getScore (void) const { return m_score; }
+    inline float getYScore (void) const { return m_yScore; }
     inline void setId (int id) { m_id = id; }
     inline void setScore (float score) { m_score = score; }
+    inline void setYScore (float yScore) { m_yScore = yScore; }
     inline void addToScore (float score) { m_score += score; }
     inline void subFromScore (float score) { m_score -= score; }
     friend inline bool operator< (const ImageScore &left, const
@@ -24,6 +26,7 @@ namespace ImageSearch
     }
   private:
     int m_id;
+    float m_yScore;
     float m_score;
   };
 

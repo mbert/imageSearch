@@ -204,7 +204,8 @@ ImageSearchBackend::getBlImage (const ImageScore &score)
   std::auto_ptr<DBImage> dbImage (m_database->getById (score.getId ()));
   std::string fileName = dbImage->getFileName ();
   std::string text = "File: " + fileName
-    + ", score: " + CxxUtil::dtoa (score.getScore ());
+    + ", score: " + CxxUtil::dtoa (score.getScore ())
+    + ", yScore: " + CxxUtil::dtoa (score.getYScore ());
   return makeBlImage (fileName, text);
 }
 

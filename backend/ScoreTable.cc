@@ -125,12 +125,20 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
     {
       querySingleColor (*lY, scores[i], m_averageY[i], m_positiveY,
 			m_negativeY, weightY);
-
-      querySingleColor (*lU, scores[i], m_averageU[i], m_positiveU,
-			m_negativeU, weightU);
-
-      querySingleColor (*lV, scores[i], m_averageV[i], m_positiveV,
-			m_negativeV, weightV);
+      scores[i].setYScore(scores[i].getScore ());
+      if (scores[i].getYScore () > 0)
+	{
+	  // positive score? skip any further calculation and make sure
+	  // this image does not get ranked high...
+	  scores[i].setScore (scores[i].getScore () * 3);
+	}
+      else
+	{
+	  querySingleColor (*lU, scores[i], m_averageU[i], m_positiveU,
+			    m_negativeU, weightU);
+	  querySingleColor (*lV, scores[i], m_averageV[i], m_positiveV,
+			    m_negativeV, weightV);
+	}
 
     }
 
@@ -140,7 +148,14 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
   timer.restart ();
 
   std::sort (scores.begin (), scores.end ());
-
+#if 0
+  for (int i = 0; i < scores.size () ; ++i)
+    {
+      std::cout << "image ID: " << scores[i].getId ()
+		<< ", yScore: " << scores[i].getYScore ()
+		<< ", score: " << scores[i].getScore () << std::endl;
+    }
+#endif
   elapsed = (int)(timer.elapsed () * 1000);
   std::cout << "sorting the query results took "
 	    << elapsed << " milliseconds." << std::endl;
