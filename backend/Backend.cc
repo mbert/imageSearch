@@ -79,7 +79,8 @@ ImageSearchBackend::initScoreTable (void)
 	  m_nDbImages = allImages.size ();
 	  m_scoreTable = ScoreTableFactory::create (getDbImageRows (),
 						    getDbImageCols (),
-						    m_nKeptCoeffs, allImages);
+						    m_nKeptCoeffs, allImages,
+						    ScoreTableFactory::SPACE);
 	}
       else
 	{

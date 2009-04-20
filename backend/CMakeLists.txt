@@ -5,6 +5,7 @@ ADD_LIBRARY(Backend
 	Backend.cc
 	ScoreTable.cc
 	BitArrayScoreTable.cc
+	PreSelectScoreTable.cc
 	ScoreTableFactory.cc
 	postgresql/PostgresQl.cc
 	postgresql/PgSelect.cc

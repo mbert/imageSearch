@@ -7,8 +7,6 @@
 
 using namespace ImageSearch;
 
-#define MAX_WEIGHT_IDX 5
-
 BitArrayScoreTable::BitArrayScoreTable (int rows, int cols, int nKeptCoeffs,
 					const DbImageList &images)
   : ScoreTable (rows, cols, nKeptCoeffs, images)
