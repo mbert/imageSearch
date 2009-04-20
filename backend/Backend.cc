@@ -1,4 +1,4 @@
-#include "BitArrayScoreTable.h"
+#include "ScoreTableFactory.h"
 #include "Backend.h"
 #include "ImageScore.h"
 #include "postgresql/PostgresQl.h"
@@ -77,9 +77,9 @@ ImageSearchBackend::initScoreTable (void)
 		    << std::endl;
 	  DbImageList allImages = m_database->findAll ();
 	  m_nDbImages = allImages.size ();
-	  m_scoreTable = new BitArrayScoreTable (getDbImageRows (),
-						 getDbImageCols (),
-						 m_nKeptCoeffs, allImages);
+	  m_scoreTable = ScoreTableFactory::create (getDbImageRows (),
+						    getDbImageCols (),
+						    m_nKeptCoeffs, allImages);
 	}
       else
 	{
