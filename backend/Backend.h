@@ -24,8 +24,8 @@ namespace ImageSearch
 			  const std::string &clientName);
     bool isCurrentImageValid (void) const;
     std::string guessMimeType (void) const;
-    BlImageIterator performSearch (void);
-    bool hasMore (const BlImageIterator &it) const;
+    BlImageConstIterator performSearch (void);
+    bool hasMore (const BlImageConstIterator &it) const;
     int getThumbHeight (void) const;
     int getThumbWidth (void) const;
 

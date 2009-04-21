@@ -1,6 +1,8 @@
 #include "BitArrayScoreTable.h"
 #include "macros.h"
 
+#include <boost/timer.hpp>
+
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
@@ -11,12 +13,8 @@ BitArrayScoreTable::BitArrayScoreTable (int rows, int cols, int nKeptCoeffs,
 					const DbImageList &images)
   : ScoreTable (rows, cols, nKeptCoeffs, images)
 {
+  boost::timer timer;
   m_scoreListPerPixelSize = (int)::ceil (m_nImages / 8.0);
-  m_lqcache.resize (MAX (m_rows, m_cols));
-  for (int i = 0; i < m_lqcache.size (); i++)
-    {
-      m_lqcache[i] = (int)floor (log ((double)i) / log ((double)2));
-    }
   m_bufSize = m_scoreListPerPixelSize * m_rows * m_cols;
   m_positiveY = new unsigned char[m_bufSize];
   m_negativeY = new unsigned char[m_bufSize];
@@ -25,10 +23,10 @@ BitArrayScoreTable::BitArrayScoreTable (int rows, int cols, int nKeptCoeffs,
   m_positiveV = new unsigned char[m_bufSize];
   m_negativeV = new unsigned char[m_bufSize];
   std::cout << "allocated "
-	    << m_bufSize << " bytes per feature vector, that is "
-	    << m_bufSize / 1024 << " kilobytes." << std::endl;
+	    << m_bufSize * 6 << " bytes, that is "
+	    << m_bufSize * 6 / 1024 << " kilobytes." << std::endl;
   int index;
-  for (DbImageIterator it = images.begin (); it != images.end (); ++it)
+  for (DbImageConstIterator it = images.begin (); it != images.end (); ++it)
     {
       index = (*it)->getId ();
       addImageFeatureVector (index, (*it)->getFeaturesYPlus (), m_positiveY);
@@ -38,6 +36,9 @@ BitArrayScoreTable::BitArrayScoreTable (int rows, int cols, int nKeptCoeffs,
       addImageFeatureVector (index, (*it)->getFeaturesVPlus (), m_positiveV);
       addImageFeatureVector (index, (*it)->getFeaturesVMinus (), m_negativeV);
     }
+  int elapsed = (int)(timer.elapsed () * 1000);
+  std::cout << "creating the BitArrayScoreTable for all " << m_nImages
+	    << " images took " << elapsed << " milliseconds." << std::endl;
 }
 
 void
@@ -85,11 +86,11 @@ BitArrayScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
   CoeffInformation ci;
   for (int i = 0; i < scores.size () ; ++i)
     {
-      querySingleColor (qY, scores[i], m_averageY[i], m_positiveY,
+      querySingleColor (qY, i, scores[i], m_averageY[i], m_positiveY,
 			m_negativeY, m_weightY);
-      querySingleColor (qU, scores[i], m_averageU[i], m_positiveU,
+      querySingleColor (qU, i, scores[i], m_averageU[i], m_positiveU,
 			m_negativeU, m_weightU);
-      querySingleColor (qV, scores[i], m_averageV[i], m_positiveV,
+      querySingleColor (qV, i, scores[i], m_averageV[i], m_positiveV,
 			m_negativeV, m_weightV);
     }
 
@@ -97,12 +98,13 @@ BitArrayScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 
 bool
 BitArrayScoreTable::isSet (const CoeffInformation &ci, int pos,
-			   const unsigned char array[])
+			   const unsigned char positives[],
+			   const unsigned char negatives[])
 {
   int start = vectorStart (ci);
   int byte = pos / 8;
   int bit = pos % 8;
-  return IS_BIT_SET (array[byte], bit);
+  return IS_BIT_SET ((ci.val () > 0 ? positives : negatives)[byte], bit);
 }
 
 int
@@ -112,9 +114,8 @@ BitArrayScoreTable::vectorStart (const CoeffInformation &ci)
 }
 
 void
-BitArrayScoreTable::querySingleColor (ImageInformation &truncated,
-				      ImageScore &score,
-				      float average,
+BitArrayScoreTable::querySingleColor (ImageInformation &truncated, int pos,
+				      ImageScore &score, float average,
 				      const unsigned char *positives,
 				      const unsigned char *negatives,
 				      const float weights[])
@@ -124,14 +125,10 @@ BitArrayScoreTable::querySingleColor (ImageInformation &truncated,
   score.addToScore (weights[0] * (::abs (truncated.at(0).val () - average)));
   for (int j = 1; j < truncated.size (); ++j)
     {
-      for (int k = 0; k < m_nImages; ++k)
+      ci = truncated.at(j);
+      if (isSet (ci, pos, positives, negatives))
 	{
-	  ci = truncated.at(j);
-	  if (ci.val () > 0 && isSet (ci, k, positives)
-	      || isSet (ci, k, negatives))
-	    {
-	      score.subFromScore (weights[bin (ci.ypos (), ci.xpos ())]);
-	    }
+	  score.subFromScore (weights[bin (ci.ypos (), ci.xpos ())]);
 	}
     }
 }

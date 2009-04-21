@@ -14,14 +14,14 @@ namespace ImageSearch
   private:
     virtual void p_query (ImageInformation &qY, ImageInformation &qU,
 			  ImageInformation &qV, ImageScoreList &scores);
-    void querySingleColor (ImageInformation &truncated,
-			   ImageScore &score,
-			   float average,
+    void querySingleColor (ImageInformation &truncated, int pos,
+			   ImageScore &score, float average,
 			   const unsigned char *positives,
 			   const unsigned char *negatives,
 			   const float weights[]);
     bool isSet (const CoeffInformation &ci, int pos,
-		const unsigned char array[]);
+		const unsigned char positives[],
+		const unsigned char negatives[]);
     int vectorStart (const CoeffInformation &ci);
 
     void addImageFeatureVector (int index, const Features &src,

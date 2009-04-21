@@ -67,7 +67,7 @@ namespace ImageSearch
   };
 
   typedef std::vector<boost::shared_ptr<DBImage> > DbImageList;
-  typedef DbImageList::const_iterator DbImageIterator;
+  typedef DbImageList::const_iterator DbImageConstIterator;
 };
 
 

@@ -22,11 +22,16 @@ ScoreTable::ScoreTable (int rows, int cols, int nKeptCoeffs,
   : m_rows (rows), m_cols (cols),
     m_nKeptCoeffs (nKeptCoeffs), m_nImages (images.size ())
 {
+  m_lqcache.resize (MAX (m_rows, m_cols));
+  for (int i = 0; i < m_lqcache.size (); i++)
+    {
+      m_lqcache[i] = (int)floor (log ((double)i) / log ((double)2));
+    }
   m_averageY.resize (m_nImages);
   m_averageU.resize (m_nImages);
   m_averageV.resize (m_nImages);
   int index;
-  for (DbImageIterator it = images.begin (); it != images.end (); ++it)
+  for (DbImageConstIterator it = images.begin (); it != images.end (); ++it)
     {
       index = (*it)->getId ();
       m_averageY[index] = (*it)->getAverageY ();

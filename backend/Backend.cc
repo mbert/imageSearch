@@ -80,7 +80,7 @@ ImageSearchBackend::initScoreTable (void)
 	  m_scoreTable = ScoreTableFactory::create (getDbImageRows (),
 						    getDbImageCols (),
 						    m_nKeptCoeffs, allImages,
-						    ScoreTableFactory::SPACE);
+						    ScoreTableFactory::SPEED);
 	}
       else
 	{
@@ -173,7 +173,7 @@ ImageSearchBackend::makeBlImage (const std::string &fileName,
 			       text, targetUrl);
 }
 
-BlImageIterator
+BlImageConstIterator
 ImageSearchBackend::performSearch (void)
 {
   m_searchResults.clear ();
@@ -207,13 +207,12 @@ ImageSearchBackend::getBlImage (const ImageScore &score)
   std::auto_ptr<DBImage> dbImage (m_database->getById (score.getId ()));
   std::string fileName = dbImage->getFileName ();
   std::string text = "File: " + fileName
-    + ", score: " + CxxUtil::dtoa (score.getScore ())
-    + ", yScore: " + CxxUtil::dtoa (score.getYScore ());
+    + ", score: " + CxxUtil::dtoa (score.getScore ());
   return makeBlImage (fileName, text);
 }
 
 bool
-ImageSearchBackend::hasMore (const BlImageIterator &it) const
+ImageSearchBackend::hasMore (const BlImageConstIterator &it) const
 {
   return m_searchResults.end () != it;
 }

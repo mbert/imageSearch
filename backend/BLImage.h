@@ -37,7 +37,7 @@ namespace ImageSearch
   };
 
   typedef std::vector<BLImage> BlImageList;
-  typedef BlImageList::const_iterator BlImageIterator;
+  typedef BlImageList::const_iterator BlImageConstIterator;
 };
 
 
