@@ -28,7 +28,6 @@ namespace ImageSearch
   private:
     Wt::WImage *m_image;
     Wt::WText *m_text;
-    Wt::WAnchor *m_anchor;
   };
 };
 

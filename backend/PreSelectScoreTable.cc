@@ -18,6 +18,15 @@ PreSelectScoreTable::PreSelectScoreTable (int rows, int cols, int nKeptCoeffs,
   m_negativeU.resize (size);
   m_positiveV.resize (size);
   m_negativeV.resize (size);
+
+  // a single vector has about 16 bytes of size
+  // each color channel has m_nKeptCoeffs nonzero coeffs, i.e. we get
+  // 3 * 60 * sizeof int
+  int usedSpace = 6 * 16 * size + 3 * m_nKeptCoeffs * sizeof (int);
+  std::cout << "allocated "
+	    << usedSpace << " bytes, that is "
+	    << usedSpace / 1024 << " kilobytes." << std::endl;
+
   std::cout << "filling them..." << std::endl;
   int id;
   for (DbImageConstIterator it = images.begin (); it != images.end (); ++it)
@@ -34,6 +43,7 @@ PreSelectScoreTable::PreSelectScoreTable (int rows, int cols, int nKeptCoeffs,
   int elapsed = (int)(timer.elapsed () * 1000);
   std::cout << "creating the PreSelectScoreTable for all " << m_nImages
 	    << " images took " << elapsed << " milliseconds." << std::endl;
+
 }
 
 void
