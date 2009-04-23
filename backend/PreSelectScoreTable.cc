@@ -97,7 +97,6 @@ PreSelectScoreTable::querySingleColor (ImageInformation &truncated,
 				       IdListList &negatives,
 				       const float weights[])
 {
-  std::cout << "querySingleColor" << std::endl;
   CoeffInformation ci;
   IdListIterator it;
   IdListIterator end;
@@ -113,7 +112,6 @@ PreSelectScoreTable::querySingleColor (ImageInformation &truncated,
 
       for (; it != end; ++it)
 	{
-	  //std::cout << "sub for image ID: " << *it << std::endl;
 	  scores[*it].subFromScore (weights[bin (ci.ypos (), ci.xpos ())]);
 	}
 

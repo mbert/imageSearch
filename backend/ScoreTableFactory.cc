@@ -8,7 +8,7 @@ ScoreTable*
 ScoreTableFactory::create (int rows, int cols, int nKeptCoeffs,
 			   const DbImageList &images, Strategy strategy)
 {
-  if (strategy == SPACE)
+  if (strategy == BAD)
     {
       return new BitArrayScoreTable (rows, cols, nKeptCoeffs, images);
     }

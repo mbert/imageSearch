@@ -26,6 +26,8 @@ namespace ImageSearch
 		   const std::string &anchor);
     void resetImage (void);
   private:
+    Div *m_imageDiv;
+    Div *m_textDiv;
     Wt::WImage *m_image;
     Wt::WText *m_text;
   };

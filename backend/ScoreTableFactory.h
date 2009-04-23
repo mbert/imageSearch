@@ -8,7 +8,7 @@ namespace ImageSearch
 
   class ScoreTableFactory {
   public:
-    typedef enum { SPACE, SPEED } Strategy;
+    typedef enum { BAD, GOOD } Strategy;
     static ScoreTable* create (int rows, int cols, int nKeptCoeffs,
 			       const DbImageList &images, Strategy strategy);
   };

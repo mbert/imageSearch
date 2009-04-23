@@ -80,7 +80,7 @@ ImageSearchBackend::initScoreTable (void)
 	  m_scoreTable = ScoreTableFactory::create (getDbImageRows (),
 						    getDbImageCols (),
 						    m_nKeptCoeffs, allImages,
-						    ScoreTableFactory::SPEED);
+						    ScoreTableFactory::GOOD);
 	}
       else
 	{

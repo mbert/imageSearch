@@ -12,10 +12,10 @@ using namespace ImageSearch;
 SearchResult::SearchResult (Wt::WContainerWidget *parent)
   : Div ("searchResult", parent)
 {
-  Div *imageDiv = new Div ("image", this);
-  m_image = new Wt::WImage (imageDiv);
-  Div *textDiv = new Div ("text", this);
-  m_text = new Wt::WText (textDiv);
+  m_imageDiv = new Div ("image", this);
+  m_image = new Wt::WImage (m_imageDiv);
+  m_textDiv = new Div ("text", this);
+  m_text = new Wt::WText (m_textDiv);
 }
 
 SearchResult::~SearchResult (void)
@@ -30,7 +30,7 @@ SearchResult::setImage (const std::string &thumbnail,
 {
   m_image->setResource(new Wt::WFileResource (mimeType, thumbnail));
   m_text->setText (text);
-  Wt::WAnchor *link = new Wt::WAnchor (anchor, m_image, this);
+  Wt::WAnchor *link = new Wt::WAnchor (anchor, m_image, m_imageDiv);
   show ();
 }
 
