@@ -7,16 +7,21 @@
 %
 % See the file doc/licenses/LICENSE for more details.
 
-\ProvidesPackageRCS $Header: /cvsroot/latex-beamer/latex-beamer/themes/theme/beamerthemeWarsaw.sty,v 1.9 2007/01/28 20:48:30 tantau Exp $
+\ProvidesPackageRCS $Header: /cvsroot/latex-beamer/latex-beamer/themes/theme/beamerthemeLuebeck.sty,v 1.8 2007/01/28 20:48:30 tantau Exp $
+
 
 
 \mode<presentation>
 
-\useinnertheme[shadow=true]{rounded}
-\useoutertheme{shadow}
+%\useoutertheme{default}
+\useoutertheme{split}
+\useinnertheme{rectangles}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\usecolortheme{whale}
 \usecolortheme{orchid}
 \usecolortheme{fdc}
-%\usecolortheme{beaver}
 
 \setbeamerfont{block title}{size={}}
 

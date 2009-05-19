@@ -89,53 +89,55 @@
 % 15 and 30 frames, all told.
 
 \section{Introduction}
+\subsection{Introduction}
 
-\begin{frame}{/ Introduction / Requirements}
-  % - A title should summarize the slide in an understandable fashion
-  % for anyone how does not follow everything on the slide itself.
+\begin{frame}
+  \frametitle{Introduction}
 
-  \begin{itemize}
-  \item Find images from a database
-  \item Based on image features / similarity
-  \item Matches need only be ``as good as possible''
-  \item Query against scanned or hand-drawn images
-  \end{itemize}
+  \begin{block}{Goals}<1->
+    \begin{itemize}
+    \item Image query by perceptual features / similarity
+    \item Matches ``as good as possible''
+    \item Query against scanned or hand-drawn images
+    \end{itemize}
+  \end{block}
 
-  \pause
-  \begin{itemize}
-  \item Fast
-  \item Modest memory footprint
-  \item Web interface
-  \end{itemize}
-
-  \pause
-  \begin{itemize}
-  \item Idea: Fast Multiresolution Image Querying \emph{[Jacobs95]}
-  \item Wavelet-based approach
-  \end{itemize}
+  \begin{block}{Technically}<2->
+    \begin{itemize}
+    \item Fast, modest memory footprint, web interface
+    \item Idea: Fast Multiresolution Image Querying \emph{[Jacobs95]}
+    \item Wavelet-based approach
+    \end{itemize}
+  \end{block}
 \end{frame}
 
-\section{Wavelets}
+\subsection{Background}
 
-\begin{frame}{/ Wavelets / Basics}
+\subsection{Wavelets}
 
-  \begin{itemize}
-  \item ``Small Waves'' repeatedly applied on data in different scales
-  \item \emph{Multiresolutional} view on data
-  \item Change of basis
-  \item Combined space / frequency domain representation
-  \end{itemize}
+\begin{frame}
+  \frametitle{Wavelets}
 
-  \pause
-  \begin{itemize}
-  \item \emph{Wavelet Function}: $\psi_\lambda (x)$ with $\psi$ from a function
-    space $\cal F$,\\
-    $x$ from a spatial domain $X$ and $\lambda$ from an index domain $\Lambda$.
-  \item And, accordingly, \emph{Scaling Function}:  $\phi_\lambda (x)$  
-  \end{itemize}
+  \begin{block}{Basics}<1->
+    \begin{itemize}
+    \item ``Small Waves'' applied on data in different scales
+    \item Change of basis
+    \item Combined space / frequency domain representation
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Base Functions}<2->
+    \begin{itemize}
+    \item \emph{Wavelet Function}: $\psi_\lambda (x)$ with $\psi$ from a function
+      space $\cal F$,\\
+      $x$ from a spatial domain $X$ and $\lambda$ from an index domain $\Lambda$.
+    \item And, accordingly, \emph{Scaling Function}:  $\phi_\lambda (x)$  
+    \end{itemize}
+  \end{block}
 \end{frame}
 
-\begin{frame}{/ Wavelets / Examples}
+\begin{frame}
+  \frametitle{Examples}
 
   \begin{figure}[hbt]
     \begin{center}
@@ -158,7 +160,8 @@
 
 \end{frame}
 
-\begin{frame}{/ Wavelets / Images}
+\begin{frame}
+  \frametitle{Decomposition}
 
   \begin{figure}[hbt]
     \begin{center}
@@ -181,100 +184,115 @@
 
 \end{frame}
 
-\section{Algorithm}
+\section{Application}
+\subsection{Algorithm}
 
-\begin{frame}{/ Algorithm / Score Table}
+\begin{frame}
+  \frametitle{Algorithm}
 
-  \begin{itemize}
-  \item Transform the image to \emph{YUV} colour space
-  \item Perform a full \emph{Haar} Decomposition on the image
-  \item For each colour channel:
-    \begin{enumerate}
-    \item Sort the wavelet coefficients by absolute values
-    \item Discard all but the most significant $n$ (parameter) values
-    \item Quantise the remaining values to $\pm 1$
-    \end{enumerate}
-  \end{itemize}
+  \begin{block}{Score Table}<1->
+    \begin{itemize}
+    \item \emph{YUV} colour space, normalised size, mirror extension
+    \item Perform a full \emph{Haar} Decomposition on the image
+    \item Keep the most significant $k$ (parameter) values as $\pm 1$
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Preprocessing}<2->
+    \begin{itemize}
+    \item \emph{plus} and \emph{minus} table per colour channel $c$:
+      $T_{c,\{+|-\}}$
+    \item $YX$ ($Y$ rows, $X$ cols) binary arrays $A_{c,\{+|-\},y,x}$ per table
+    \item Image $I_n$: $A_{c,\{+|-\},y,x,n} :=
+      \mbox{significant}(I_{n,y,x}) \,\&\&\, \mbox{signs match}$
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algorithm}
+
+  \begin{block}{Score Initialisation}<1->
+    \begin{itemize}
+    \item Same transform and quantisation as for the score table
+    \item Initial score $L_q$ (query image $Q$, database image $I_n$):
+
+      \medskip
+      ~~$L_{q,n} := \sum_{c} \mbox{abs}(Q_{c,0,0} - I_{n,c,0,0})$
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Score on Detail Coefficients}<2->
+    \begin{itemize}
+    \item For each Image $I_n$, position $(y,x)$, colour
+      channel $c$:\vspace{4pt}
+      \begin{itemize}
+      \item Array:~~ $A_{n,c,y,x} := Q_{c,y,x} > 0 \mbox{~?~} A_{n,c,+,y,x}
+        \mbox{~:~} A_{n,c,-,y,x}$\vspace{4pt}
+      \item If ~$A_{n,c,y,x}$ ~matches: ~~$L_{q,n} -= \mbox{weight(y,x)}$\vspace{4pt}
+      \end{itemize}
+    \end{itemize}
+  \end{block}
 
   \pause
-  \begin{itemize}
-  \item For each colour channel: one \emph{plus} and \emph{minus}
-    table
-  \item Each table consists of $YX$ ($Y$ rows, $X$ cols) binary arrays 
-  \item Each array contains the information whether image $I_n$ contains
-    a significant coefficient at position $y, x$\\
-    with sign according to its table
-  \end{itemize}
-
+  \rarrow The lower the score value the better the match
 \end{frame}
 
-\begin{frame}{/ Algorithm / Matching}
+\subsection{Implementation}
 
-  \begin{itemize}
-  \item Same transform and quantisation as for the score table
-  \item Init score by sum of weighted differences of the colour channels'
-    corresponding overall average values
-  \item For each pixel position of each colour channel:
-    \begin{enumerate}
-    \item If this coefficient $>$ 0, use the \emph{Plus} array,
-      else \emph{Minus}
-    \item For each image in the array subtract a value (depends on
-      subband) if the image has a matching value at that position
-    \end{enumerate}
-  \item The lower the score value the better the match
-  \end{itemize}
+\begin{frame}
+  \frametitle{Implementation}
 
+  \begin{block}{Technically}<1->
+    \begin{itemize}
+    \item C++, libstdc++, some boost libraries \emph{[boost]}
+    \item My own Wavelet library \emph{[libWavelet]}
+    \item PostgresQL and a C++ API \emph{[pqxx]}
+    \item WT Web Toolkit \emph{[wt]}
+      \pause
+    \item And: \texttt{M-x viper-mode} :)
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Initial Approach}<3->
+    \begin{itemize}
+    \item Image IDs bitwise as offsets in \emph{plus} and \emph{minus} arrays
+    \end{itemize}
+  \end{block}
 \end{frame}
 
-\section{Implementation}
+\begin{frame}
+  \frametitle{Implementation}
 
-\begin{frame}{/ Implementation / Initial Version}
+  \begin{block}{Optimisation}<1->
+    \begin{itemize}
+    \item Quest for better runtime performance
+    \item Initial assumption: faster queries, bigger memory footprint
+    \item Alternative Score Table \rarrow \emph{OPEN IMPLEMENTATION}\\
+      \texttt{ScoreTableFactory::create (/*...*/, SPEED)}\\
+      \texttt{ScoreTableFactory::create (/*...*/, SIZE)}\\
+    \end{itemize}
+  \end{block}
 
-  \begin{itemize}
-  \item C++, libstdc++
-  \item My own Wavelet library \emph{[libWavelet]}
-  \item Some boost libraries \emph{[boost]}
-  \item PostgresQL and a C++ API \emph{[pqxx]}
-  \item WT Web Toolkit \emph{[wt]}
-    \pause
-  \item And: \texttt{M-x viper-mode} :)
-  \end{itemize}
-
-    \pause
-  \begin{itemize}
-  \item Use image IDs as offsets in \emph{plus} and \emph{minus} arrays
-  \item One bit per image and array
-  \item The Score Table is a \emph{singleton}
-  \end{itemize}
-
-\end{frame}
-
-\begin{frame}{/ Implementation / Second Approach to Score Table}
-
-  \begin{itemize}
-  \item Quest for better runtime performance
-  \item Initial assumption: faster queries, bigger memory footprint
-  \item Alternative Score Table \rarrow \emph{OPEN IMPLEMENTATION}\\
-    \texttt{ScoreTableFactory::create (/*...*/, SPEED)}\\
-    \texttt{ScoreTableFactory::create (/*...*/, SIZE)}\\
-  \end{itemize}
+  \begin{block}{Second Approach}<2->
+    \begin{itemize}
+    \item Keep matching images' IDs in \emph{plus} and \emph{minus} arrays
+    \end{itemize}
+  \end{block}
 
   \pause
-  \begin{itemize}
-  \item In the \emph{plus} and \emph{minus} arrays, store the IDs of
-    images which have the right values at the respective locations
-
-    \rarrow More work at setup, fewer comparisons when querying
-  \end{itemize}
-
+  \rarrow More work at setup, fewer comparisons when querying
 \end{frame}
 
 \section{Results and Discussion}
 
-\begin{frame}{/Results and Discussion / Comparing the Approaches}
+\subsection{Results}
 
-  \begin{itemize}
-    \item Experimental Results (610 images, 60 kept coefficients):
+\begin{frame}
+  \frametitle{Comparison of the Approaches}
+
+    \begin{block}{Experimental Results (610 images, 60 kept coefficients)}
       \begin{center}
         \begin{tabular}{|l|r|r|}\hline
           ~ & \texttt{SIZE} & \texttt{SPEED} \\ \hline\hline
@@ -283,91 +301,87 @@
           Score Table Size & 29.98 MB  & 6.29 MB \\ \hline
         \end{tabular}
       \end{center}
-      \medskip
+    \end{block}
 
-        \pause
+    \pause
+    \begin{itemize}
       \item The \texttt{SPEED} variant takes \emph{less} space
 
         \pause
         \rarrow \texttt{\%s/SIZE/BAD/g}\pause, \texttt{\%s/SPEED/GOOD/g} \pause :)
-
-  \end{itemize}
+      \end{itemize}
 
 \end{frame}
 
-\begin{frame}{/ Results and Discussion / Technologies \# 1}
+\begin{frame}
+  \frametitle{Technology Impressions \#1}
 
-  \begin{itemize}
-  \item Wavelet-Lib:
+  \begin{block}{Wavelet-Lib}<1->
     \begin{itemize}
     \item 26,000 lines of C++ code
-    \item Rather old (started in 1994)
-    \item No STL, no smart pointers
-    \item Prone to memory leaks
+    \item Rather old (started in 1999)
+    \item No STL, no smart pointers, prone to memory leaks
     \item Nevertheless well-tested (thanks to \emph{valgrind})
     \end{itemize}
-    \pause
-  \item Pqxx:
+  \end{block}
+
+  \begin{block}{Pqxx}<2->
     \begin{itemize}
-    \item STL-containers
-    \item Insufficient documentation
-    \item PostgresQL only
-    \item Tedious to use
+    \item Poor documentation, tedious to use, PostgresQL only
     \item Better try \emph{hiberlite} or \emph{sqlite} in future!
     \end{itemize}
-  \end{itemize}
+  \end{block}
   
 \end{frame}
 
-\begin{frame}{/ Results and Discussion / Technologies \# 2}
+\begin{frame}
+  \frametitle{Technology Impressions \#2}
 
-  \begin{itemize}
-  \item WT:
+  \begin{block}{WT}<1->
     \begin{itemize}
     \item Elegant, QT-like API (\rarrow \emph{Signals}, \emph{Slots})
-    \item Supports clean separation of model, view, controller
-    \item Good CSS support
-    \item Good Ajax integration
-    \item Very code-based, use of HTML templates is difficult to
-      integrate
+    \item Good CSS and Ajax integration
+    \item Very code-based, HTML templates difficult to integrate
     \item After little time, productivity felt quite good, a bit like
       \emph{Wicket}
     \end{itemize}
-    \pause
-  \item Technology which was missing:
+  \end{block}
+  \begin{block}{Technology which was \emph{not} used}<2->
     \begin{itemize}
-    \item I missed \emph{Spring}; handwritten wiring of services was
+    \item \emph{Spring}; handwritten wiring of services was
       still simple enough, but with increasing size...
     \end{itemize}
-  \end{itemize}
+  \end{block}
   
 \end{frame}
 
-\section*{Summary}
+\subsection{Summary}
 
 \begin{frame}{Summary}
 
-  \begin{itemize}
-  \item The image search engine is fast and memory efficient
-  \item Results are good on images with few details
-  \item Images of landscapes are problematic
-  \end{itemize}
+  \begin{block}{Results}<1->
+    \begin{itemize}
+    \item The image search engine is fast and memory efficient
+    \item Results are good on images with few details
+    \item Images of landscapes are problematic
+    \end{itemize}
+  \end{block}
   
-  \pause
-  \vskip0pt plus.5fill
-  \begin{itemize}
-  \item Future Work
+  \begin{block}{Future Work}<2->
     \begin{itemize}
     \item Rewrite the database backend code and get rid of \emph{pqxx}
     \item More experiments with different weight factors and
       numbers-of-kept-coefficients
     \end{itemize}
-    \pause
-  \item That's all, folks!
+  \end{block}
+  
+  \begin{itemize}
+  \item<3-> That's all, folks!
   \end{itemize}
+
 \end{frame}
 
-\section*{References}
+\subsection{References}
 
 \begin{frame}{References}
 
