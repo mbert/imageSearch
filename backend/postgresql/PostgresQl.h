@@ -15,6 +15,7 @@ namespace ImageSearch
   public:
     PostgresQl (const std::string &hostAddr,
 		const std::string &dbName,
+		const std::string &tableBaseName,
 		const std::string &userName,
 		const std::string &password,
 		int dbImageRows, int dbImageCols, int nKeptCoeffs);
@@ -28,6 +29,7 @@ namespace ImageSearch
     std::auto_ptr<pqxx::connection> createConnection (void);
     std::string m_hostAddr;
     std::string m_dbName;
+    std::string m_tableBaseName;
     std::string m_userName;
     std::string m_password;
     int m_dbImgRows;

@@ -8,15 +8,14 @@
 
 using namespace ImageSearch;
 
-#define TABLE_NAME "images"
-
 PostgresQl::PostgresQl (const std::string &hostAddr,
 			const std::string &dbName,
+			const std::string &tableBaseName,
 			const std::string &userName,
 			const std::string &password,
 			int dbImageRows, int dbImageCols, int nKeptCoeffs)
-  : m_hostAddr (hostAddr), m_dbName (dbName), m_userName (userName),
-    m_password (password), m_dbImgRows (dbImageRows),
+  : m_hostAddr (hostAddr), m_dbName (dbName), m_tableBaseName (tableBaseName),
+    m_userName (userName), m_password (password), m_dbImgRows (dbImageRows),
     m_dbImgCols (dbImageCols), m_nKeptCoeffs (nKeptCoeffs)
 {
 }
@@ -116,7 +115,7 @@ PostgresQl::p_getById (int id)
 std::string
 PostgresQl::getTableName (void)
 {
-  return TABLE_NAME"_" + CxxUtil::itoa (m_dbImgRows) + "_"
+  return m_tableBaseName + "_" + CxxUtil::itoa (m_dbImgRows) + "_"
     + CxxUtil::itoa (m_dbImgCols) + "_" + CxxUtil::itoa (m_nKeptCoeffs);
 }
 

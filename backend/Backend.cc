@@ -34,6 +34,7 @@ using namespace ImageSearch;
 #define MAX_RESULTS 40
 
 #define DB_NAME "images"
+#define TABLE_NAME "images"
 #define HOSTADDR "127.0.0.1"
 #define USERNAME "md"
 #define PASSWORD "md"
@@ -52,7 +53,7 @@ ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
 {
   char buf[PATH_MAX];
   m_documentRoot = std::string (getcwd (buf, sizeof buf));
-  m_database = new PostgresQl (HOSTADDR, DB_NAME, USERNAME, PASSWORD,
+  m_database = new PostgresQl (HOSTADDR, DB_NAME, TABLE_NAME, USERNAME, PASSWORD,
 			       DB_IMAGE_ROWS, DB_IMAGE_COLS, KEPT_COEFFS);
   if (m_imageDbPrefix.size () > 0)
     {
