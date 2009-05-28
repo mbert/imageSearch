@@ -265,7 +265,7 @@ ImageSearchBackend::createDbImage (const std::string &path,
   std::string fileName ((pos != std::string::npos && pos < path.size () - 1)
 			? path.substr (pos + 1) : path);
 
-  std::auto_ptr<ColorImage> scaled (img->fitInto (rows, cols, true));
+  std::auto_ptr<ColorImage> scaled (img->fitInto (rows, cols, ef_outerBorder));
   img.reset ();
   if (scaled->colormodel () != cm_yuv)
     {
