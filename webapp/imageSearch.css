@@ -1,0 +1,79 @@
+element.style {
+}
+.atTop {
+  margin-bottom: 1em;
+}
+
+.atTop .title {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-right: 1em;
+}
+
+div.atTop .title {
+}
+
+div.atTop .image {
+  vertical-align: bottom;
+}
+
+.topContent {
+}
+
+div.topContent .searchInputLine {
+  margin-right: 1em;
+  float: left !important;
+  clear: none !important;
+}
+
+.searchField {
+  text-align: center;
+}
+
+.floatLeft {
+  float: left !important;
+  clear: none !important;
+}
+
+.floatRight {
+  float: right !important;
+  clear: none !important;
+}
+.clear {
+  clear: both;
+}
+
+.resultSection {
+  margin-top: 1em;
+}
+
+.resultText {
+  margin-top: 1em;
+}
+
+.resultSection .resultText .title {
+  font-size: 1.4em;
+  font-weight: bold;
+  margin: 1em;
+}
+
+.resultSection .resultText .error {
+  font-size: 1.0em;
+  font-weight: bold;
+  color: red;
+  margin-right: 1em;
+}
+.searchResult {
+  width: 250px;
+  height: 320px;
+  margin: 0.5em;
+  float: left !important;
+  clear: none !important;
+}
+
+div.searchResult .image {
+  text-align: center;
+}
+
+div.searchResult .text {
+}
