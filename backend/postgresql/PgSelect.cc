@@ -43,6 +43,10 @@ void
 Pg::SelectAll::operator() (argument_type &t)
 {
   int chunk = 1000;
+  if (chunk > m_size)
+    {
+      chunk = m_size;
+    }
   for (int id = 0; id < m_size; id += chunk)
     {
       if (id > 0)

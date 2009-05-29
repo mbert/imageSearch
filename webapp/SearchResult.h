@@ -30,7 +30,6 @@ namespace ImageSearch
   private:
     Div *m_imageDiv;
     Div *m_textDiv;
-    Wt::WImage *m_image;
     Wt::WText *m_text;
     std::auto_ptr<Wt::WResource> m_resource;
   };

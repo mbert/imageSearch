@@ -50,10 +50,8 @@ ImageSearchApplication::setupTopSection (void)
 {
   Div *atTop = new Div ("atTop", "atTop", root ());
 
-  Wt::WImage *image = new Wt::WImage ("images/daubechies-d4-wavelet.png",
-				      atTop);
+  Wt::WImage *image = new Wt::WImage ("images/daubechies-d4-wavelet.png");
   image->setStyleClass ("image");
-
   Wt::WAnchor *a = new Wt::WAnchor ("http://www.wavelet.org", image, atTop);
 
   Wt::WText *title = new Wt::WText ("Image Search", atTop);
