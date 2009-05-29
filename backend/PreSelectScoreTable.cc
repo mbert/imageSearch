@@ -78,11 +78,15 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
   double avgY = qY.at(0).val ();
   double avgU = qU.at(0).val ();
   double avgV = qV.at(0).val ();
+  int difference;
   for (int i = 0; i < scores.size (); ++i)
     {
-      scores[i].addToScore (m_weightY[0] * (::abs (avgY - m_averageY[i])));
-      scores[i].addToScore (m_weightU[0] * (::abs (avgU - m_averageU[i])));
-      scores[i].addToScore (m_weightV[0] * (::abs (avgV - m_averageV[i])));
+      difference = (int)(avgY - m_averageY[i]);
+      scores[i].addToScore (m_weightY[0] * (::abs (difference)));
+      difference = (int)(avgU - m_averageU[i]);
+      scores[i].addToScore (m_weightU[0] * (::abs (difference)));
+      difference = (int)(avgV - m_averageV[i]);
+      scores[i].addToScore (m_weightV[0] * (::abs (difference)));
     }
 
   querySingleColor (qY, scores, m_positiveY, m_negativeY, m_weightY);

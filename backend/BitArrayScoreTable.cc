@@ -122,7 +122,8 @@ BitArrayScoreTable::querySingleColor (ImageInformation &truncated, int pos,
 {
   CoeffInformation ci;
 
-  score.addToScore (weights[0] * (::abs (truncated.at(0).val () - average)));
+  int difference = (int)(truncated.at(0).val () - average);
+  score.addToScore (weights[0] * (::abs (difference)));
   for (int j = 1; j < truncated.size (); ++j)
     {
       ci = truncated.at(j);
