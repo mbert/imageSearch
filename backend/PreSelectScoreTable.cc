@@ -22,7 +22,8 @@ PreSelectScoreTable::PreSelectScoreTable (int rows, int cols, int nKeptCoeffs,
   // a single vector has about 16 bytes of size
   // each color channel has m_nKeptCoeffs nonzero coeffs, i.e. we get
   // 3 * 60 * sizeof int
-  int usedSpace = 6 * 16 * size + 3 * m_nKeptCoeffs * sizeof (int);
+  int usedSpace = 6 * 16 * size
+    + 3 * images.size () * m_nKeptCoeffs * sizeof (int);
   std::cout << "allocated "
 	    << usedSpace << " bytes, that is "
 	    << usedSpace / 1024 << " kilobytes." << std::endl;
