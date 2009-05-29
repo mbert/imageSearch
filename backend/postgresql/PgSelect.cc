@@ -31,9 +31,8 @@ void Pg::SelectCount::operator() (argument_type &t)
 Pg::SelectAll::SelectAll (const std::string &tableName,
 			  DbImageList &result, int size)
   : pqxx::transactor<> ("SelectAll"),
-    m_tableName (tableName), m_result (result)
+    m_size (size), m_tableName (tableName), m_result (result)
 {
-  m_result.resize (size);
 }
 
 Pg::SelectAll::~SelectAll (void)
@@ -43,8 +42,20 @@ Pg::SelectAll::~SelectAll (void)
 void
 Pg::SelectAll::operator() (argument_type &t)
 {
-  pqxx::result r = t.exec("select * from " + m_tableName + " order by id");
-  //r.at(0).at(0).to (m_result);
+  int chunk = 1000;
+  for (int id = 0; id < m_size; id += chunk)
+    {
+      addChunkToResult (t, id, chunk);
+    }
+}
+
+void
+Pg::SelectAll::addChunkToResult (argument_type &t, int from, int maxNum)
+{
+  std::string query = "select * from " + m_tableName + " where id >= "
+    + CxxUtil::itoa (from) + " order by id limit " + CxxUtil::itoa (maxNum);
+  //std::cout << "query: " << query << std::endl;
+  pqxx::result r = t.exec(query);
   for (pqxx::result::const_iterator it = r.begin (); it != r.end (); ++it)
     {
       m_result.push_back (boost::shared_ptr<DBImage>(makeDbImage (*it)));

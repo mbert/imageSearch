@@ -81,6 +81,7 @@ PostgresQl::p_findAll (void)
       std::auto_ptr<pqxx::connection> con = createConnection ();
       int nImages = 0;
       Pg::SelectCount selectCount (getTableName (), nImages);
+      con->perform (selectCount);
       Pg::SelectAll selectAll (getTableName (), result, nImages);
       con->perform (selectAll);
     }
