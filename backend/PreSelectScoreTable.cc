@@ -75,7 +75,6 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 			      ImageInformation &qV, ImageScoreList &scores)
 {
 
-  std::cout << "p_query" << std::endl;
   double avgY = qY.at(0).val ();
   double avgU = qU.at(0).val ();
   double avgV = qV.at(0).val ();

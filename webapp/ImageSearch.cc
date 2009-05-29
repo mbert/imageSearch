@@ -11,6 +11,7 @@
 #include <Wt/WFileUpload>
 #include <Wt/WFileResource>
 #include <Wt/WPushButton>
+#include <Wt/WEnvironment>
 
 #include <iostream>
 #include <fstream>
@@ -35,7 +36,13 @@ ImageSearchApplication::ImageSearchApplication (const Wt::WEnvironment& env)
 
   useStyleSheet ("imageSearch.css");
 
-
+  /*Wt::WEnvironment::ArgumentMap argumentMap = env.arguments ();
+  Wt::WEnvironment::ArgumentValues image = argumentMap["imageQueryId"];
+  for (int i = 0; i < image.size (); ++i)
+    {
+      std::cout << "Image[s] from args: " << image[i] << std::endl;
+    }
+  */
 }
 
 void

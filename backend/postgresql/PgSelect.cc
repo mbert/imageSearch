@@ -45,6 +45,12 @@ Pg::SelectAll::operator() (argument_type &t)
   int chunk = 1000;
   for (int id = 0; id < m_size; id += chunk)
     {
+      if (id > 0)
+	{
+	  std::cout << "PgSelect: continuing fetch from id " << id
+		    << ", current result set size is " << m_result.size ()
+		    << std::endl;
+	}
       addChunkToResult (t, id, chunk);
     }
 }

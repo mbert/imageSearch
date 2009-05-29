@@ -73,15 +73,22 @@ PostgresQl::p_getLastId (void)
 }
 
 DbImageList
-PostgresQl::p_findAll (void)
+PostgresQl::p_findAll (int nMax)
 {
   DbImageList result;
   try
     {
       std::auto_ptr<pqxx::connection> con = createConnection ();
       int nImages = 0;
-      Pg::SelectCount selectCount (getTableName (), nImages);
-      con->perform (selectCount);
+      if (nMax > 0)
+	{
+	  nImages = nMax;
+	}
+      else
+	{
+	  Pg::SelectCount selectCount (getTableName (), nImages);
+	  con->perform (selectCount);
+	}
       Pg::SelectAll selectAll (getTableName (), result, nImages);
       con->perform (selectAll);
     }

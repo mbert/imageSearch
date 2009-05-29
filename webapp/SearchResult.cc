@@ -6,6 +6,7 @@
 #include <Wt/WContainerWidget>
 #include <Wt/WFileResource>
 
+#include <iostream>
 
 using namespace ImageSearch;
 
@@ -30,7 +31,7 @@ SearchResult::setImage (const std::string &thumbnail,
 {
   m_image->setResource(new Wt::WFileResource (mimeType, thumbnail));
   m_text->setText (text);
-  Wt::WAnchor *link = new Wt::WAnchor (anchor, m_image, m_imageDiv);
+  m_imageDiv->addWidget (new Wt::WAnchor (anchor, m_image));
   show ();
 }
 
