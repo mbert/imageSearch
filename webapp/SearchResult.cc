@@ -16,6 +16,8 @@ SearchResult::SearchResult (Wt::WContainerWidget *parent)
   m_imageDiv = new Div ("image", this);
   m_textDiv = new Div ("text", this);
   m_text = new Wt::WText (m_textDiv);
+  m_anchor = new Wt::WAnchor ();
+  m_imageDiv->addWidget (m_anchor);
 }
 
 SearchResult::~SearchResult (void)
@@ -31,9 +33,10 @@ SearchResult::setImage (const std::string &thumbnail,
   m_resource = std::auto_ptr<Wt::WResource> (new Wt::WFileResource (mimeType,
 								    thumbnail));
   m_text->setText (text);
+  m_anchor->setRef (anchor);
   Wt::WImage *image = new Wt::WImage ();
   image->setResource (m_resource.get ());
-  m_imageDiv->addWidget (new Wt::WAnchor (anchor, image));
+  m_anchor->setImage (image);
   show ();
 }
 

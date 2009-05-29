@@ -31,6 +31,7 @@ namespace ImageSearch
     Div *m_imageDiv;
     Div *m_textDiv;
     Wt::WText *m_text;
+    Wt::WAnchor *m_anchor;
     std::auto_ptr<Wt::WResource> m_resource;
   };
 };
