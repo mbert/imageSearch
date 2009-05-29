@@ -34,7 +34,6 @@ namespace ImageSearch
       Wt::WText *m_resultText;
       ImageSearchBackend *m_backend;
       std::vector<SearchResult*> m_searchResults;
-      Wt::WAnchor *m_currentSearchAnchor;
       std::auto_ptr<Wt::WResource> m_currentSearchResource;
 
       void uploadFile (void);
