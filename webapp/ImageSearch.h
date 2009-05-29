@@ -4,6 +4,7 @@
 #include <Wt/WApplication>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace Wt
 {
@@ -11,6 +12,7 @@ namespace Wt
   class WPushButton;
   class WImage;
   class WText;
+  class WResource;
 };
 
 namespace ImageSearch
@@ -32,6 +34,7 @@ namespace ImageSearch
       Wt::WText *m_resultText;
       ImageSearchBackend *m_backend;
       std::vector<SearchResult*> m_searchResults;
+      std::auto_ptr<Wt::WResource> m_currentSearchResource;
 
       void uploadFile (void);
       void search (void);

@@ -29,7 +29,9 @@ SearchResult::setImage (const std::string &thumbnail,
 			const std::string &text,
 			const std::string &anchor)
 {
-  m_image->setResource(new Wt::WFileResource (mimeType, thumbnail));
+  m_resource = std::auto_ptr<Wt::WResource> (new Wt::WFileResource (mimeType,
+								    thumbnail));
+  m_image->setResource(m_resource.get ());
   m_text->setText (text);
   m_imageDiv->addWidget (new Wt::WAnchor (anchor, m_image));
   show ();

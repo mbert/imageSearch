@@ -129,6 +129,7 @@ ImageSearchApplication::updateSearchResults (void)
 ImageSearchApplication::~ImageSearchApplication (void)
 {
   m_backend->clearCurrentImage ();
+  delete m_backend;
 }
 
 void
@@ -184,8 +185,10 @@ void
 ImageSearchApplication::showCurrentSearch (const std::string &fileName)
 {
   std::string mimeType = m_backend->guessMimeType ();
-  Wt::WFileResource *resource = new Wt::WFileResource (mimeType, fileName);
-  m_currentSelection->setResource (resource);
+  m_currentSearchResource =
+    std::auto_ptr<Wt::WFileResource> (new Wt::WFileResource (mimeType,
+							     fileName));
+  m_currentSelection->setResource (m_currentSearchResource.get ());
   m_currentSelection->show ();
 }
 

@@ -4,6 +4,7 @@
 #include "Div.h"
 
 #include <string>
+#include <memory>
 
 namespace Wt
 {
@@ -11,6 +12,7 @@ namespace Wt
   class WImage;
   class WText;
   class WAnchor;
+  class WResource;
 };
 
 namespace ImageSearch
@@ -30,6 +32,7 @@ namespace ImageSearch
     Div *m_textDiv;
     Wt::WImage *m_image;
     Wt::WText *m_text;
+    std::auto_ptr<Wt::WResource> m_resource;
   };
 };
 
