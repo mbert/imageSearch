@@ -80,7 +80,7 @@ ImageSearchBackend::initScoreTable (void)
 	{
 	  std::cout << "score table is uninitialised, doing this now."
 		    << std::endl;
-	  DbImageList allImages = m_database->findAll (100);
+	  DbImageList allImages = m_database->findAll ();
 	  std::cout << "loaded " << allImages.size ()
 		    << " images from the database." << std::endl;
 	  m_nDbImages = allImages.size ();
