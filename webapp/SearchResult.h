@@ -25,6 +25,7 @@ namespace ImageSearch
     void setImage (const std::string &thumbnail,
 		   const std::string &mimeType,
 		   const std::string &text,
+		   const unsigned long id,
 		   const std::string &anchor);
     void resetImage (void);
   private:
@@ -32,6 +33,7 @@ namespace ImageSearch
     Div *m_textDiv;
     Wt::WText *m_text;
     Wt::WAnchor *m_anchor;
+    Wt::WAnchor *m_similar;
     std::auto_ptr<Wt::WResource> m_resource;
   };
 };

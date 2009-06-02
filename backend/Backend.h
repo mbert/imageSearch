@@ -22,6 +22,7 @@ namespace ImageSearch
     void clearCurrentImage (void);
     std::string setImage (const std::string &srcPath,
 			  const std::string &clientName);
+    std::string setImage (const unsigned long imageId);
     bool isCurrentImageValid (void) const;
     std::string guessMimeType (void) const;
     BlImageConstIterator performSearch (void);
@@ -40,13 +41,14 @@ namespace ImageSearch
 					  int id, int rows, int cols);
 
   private:
-    BLImage makeBlImage (const std::string &fileName, const std::string &text);
+    BLImage makeBlImage (const int id, const std::string &fileName,
+			 const std::string &text);
     BLImage getBlImage (const ImageScore &score);
     void initScoreTable (void);
     std::string m_currentTempFile;
     std::string m_documentRoot;
     static ScoreTable *m_scoreTable;
-    int m_nDbImages;
+    static unsigned long m_nDbImages;
     int m_sizeY;
     int m_sizeX;
     int m_maxResults;

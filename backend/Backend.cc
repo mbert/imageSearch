@@ -17,6 +17,7 @@
 #include <climits>
 #include <cstdio>
 #include <cmath>
+#include <cstring>
 
 #include <stdexcept>
 #include <iostream>
@@ -41,11 +42,14 @@ using namespace ImageSearch;
 
 boost::mutex scoreTableMutex;
 ScoreTable * ImageSearchBackend::m_scoreTable = NULL;
+unsigned long ImageSearchBackend::m_nDbImages = 0;
+
 
 static void fillFeatureVectors (const Image &img,
 				Features &posFeatures, Features &negFeatures);
 
 static std::string guessMimeType (const std::string &fileName);
+static std::string tempImageName (const std::string &baseName);
 
 ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
   : m_sizeY (THUMB_ROWS), m_sizeX (THUMB_COLS), m_maxResults (MAX_RESULTS),
@@ -76,7 +80,7 @@ ImageSearchBackend::initScoreTable (void)
 	{
 	  std::cout << "score table is uninitialised, doing this now."
 		    << std::endl;
-	  DbImageList allImages = m_database->findAll ();
+	  DbImageList allImages = m_database->findAll (100);
 	  std::cout << "loaded " << allImages.size ()
 		    << " images from the database." << std::endl;
 	  m_nDbImages = allImages.size ();
@@ -89,17 +93,11 @@ ImageSearchBackend::initScoreTable (void)
 	{
 	  std::cout << "seems like someone else's just created the score table."
 		    << std::endl;
-	  m_nDbImages = -1;
 	}
     }
   else
     {
       std::cout << "using existing score table." << std::endl;
-      m_nDbImages = -1;
-    }
-  if (m_nDbImages < 0)
-    {
-      m_nDbImages = m_database->getLastId () + 1;
     }
 }
 
@@ -109,11 +107,21 @@ ImageSearchBackend::~ImageSearchBackend (void)
 }
 
 std::string
-ImageSearchBackend::setImage (const std::string &srcPath, const std::string &clientName)
+ImageSearchBackend::setImage (const unsigned long imageId)
+{
+  std::auto_ptr<DBImage> dbImage (m_database->getById (imageId));
+  const std::string clientName = dbImage->getFileName ();
+  std::string srcPath = m_documentRoot + m_imageDbPrefix + "/" + clientName;
+  return setImage (srcPath, clientName);
+}
+
+std::string
+ImageSearchBackend::setImage (const std::string &srcPath,
+			      const std::string &clientName)
 {
   clearCurrentImage ();
   m_currentTempFile = "";
-  std::string targetName = "/tmp/" + clientName;
+  std::string targetName = tempImageName (clientName);
   try
     {
       FileName fn (clientName.c_str ());
@@ -165,14 +173,14 @@ ImageSearchBackend::guessMimeType (void) const
 }
 
 BLImage
-ImageSearchBackend::makeBlImage (const std::string &fileName,
+ImageSearchBackend::makeBlImage (const int id, const std::string &fileName,
 				 const std::string &text)
 {
   std::string thumbNail = m_documentRoot + m_imageDbPrefix + "/thumb_"
     + CxxUtil::itoa (THUMB_ROWS) + "x" + CxxUtil::itoa (THUMB_COLS)
     + "_" + fileName;
   std::string targetUrl = m_imageDbPrefix + "/" + fileName;
-  return ImageSearch::BLImage (thumbNail, ::guessMimeType (fileName),
+  return ImageSearch::BLImage (id, thumbNail, ::guessMimeType (fileName),
 			       text, targetUrl);
 }
 
@@ -211,7 +219,7 @@ ImageSearchBackend::getBlImage (const ImageScore &score)
   std::string fileName = dbImage->getFileName ();
   std::string text = "File: " + fileName
     + ", score: " + CxxUtil::dtoa (score.getScore ());
-  return makeBlImage (fileName, text);
+  return makeBlImage (dbImage->getId (), fileName, text);
 }
 
 bool
@@ -331,5 +339,23 @@ guessMimeType (const std::string &fileName)
 {
   FileName fn (fileName.c_str ());
   return fn.guessedMimeType ();
+}
+
+static std::string
+tempImageName (const std::string &baseName)
+{
+  static char buf[512];
+  ::memset (buf, 0, sizeof buf);
+  pid_t pid = getpid();
+  snprintf (buf, sizeof buf - 1, "/tmp/util-tmp-%05d-XXXXXX", (int)pid);
+  unsigned seed = (unsigned)pid;
+  int rc = CxxUtil::tempFileName (buf, baseName.c_str (), seed);
+  if (rc < 0)
+    {
+      throw std::invalid_argument ("Could not create temp file, rc: "
+        + CxxUtil::itoa (rc) + ", system error is: "
+	+ std::string (strerror (errno)).c_str ());
+    }
+  return std::string (buf);
 }
 

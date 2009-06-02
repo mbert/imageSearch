@@ -34,8 +34,11 @@ ScoreTable::ScoreTable (int rows, int cols, int nKeptCoeffs,
   for (DbImageConstIterator it = images.begin (); it != images.end (); ++it)
     {
       index = (*it)->getId ();
+      assert (index < m_averageY.size ());
       m_averageY[index] = (*it)->getAverageY ();
+      assert (index < m_averageU.size ());
       m_averageU[index] = (*it)->getAverageU ();
+      assert (index < m_averageV.size ());
       m_averageV[index] = (*it)->getAverageV ();
     }
 }

@@ -13,6 +13,8 @@
 #include <Wt/WPushButton>
 #include <Wt/WEnvironment>
 
+#include <cxxutil/utils.h>
+
 #include <iostream>
 #include <fstream>
 
@@ -36,13 +38,22 @@ ImageSearchApplication::ImageSearchApplication (const Wt::WEnvironment& env)
 
   useStyleSheet ("imageSearch.css");
 
-  /*Wt::WEnvironment::ArgumentMap argumentMap = env.arguments ();
+  Wt::WEnvironment::ArgumentMap argumentMap = env.arguments ();
   Wt::WEnvironment::ArgumentValues image = argumentMap["imageQueryId"];
-  for (int i = 0; i < image.size (); ++i)
+  if (image.size () > 0)
     {
-      std::cout << "Image[s] from args: " << image[i] << std::endl;
+      unsigned long imageId;
+      try
+	{
+	  imageId = CxxUtil::atoi (image[0]);
+	  searchByImageId (imageId);
+	}
+      catch (const std::exception e)
+	{
+	  std::cout << "Warning: Invalid image query ID "
+		    << image[0] << std::endl;
+	}
     }
-  */
 }
 
 void
@@ -78,7 +89,7 @@ ImageSearchApplication::setupInputs (void)
   Div *clearDiv = new Div ("clear", topContent);
 
   m_fileUpload->uploaded.connect
-    (SLOT (this, ImageSearchApplication::search));
+    (SLOT (this, ImageSearchApplication::searchByUpload));
   m_fileUpload->changed.connect
     (SLOT (this, ImageSearchApplication::enableSearchButton));
   m_fileUpload->fileTooLarge.connect
@@ -116,6 +127,7 @@ ImageSearchApplication::updateSearchResults (void)
       m_searchResults[i]->setImage (image.getThumbnail (),
 				    image.getMimeType (),
 				    image.getText (),
+				    image.getId (),
 				    image.getTargetLink ());
     }
   for (; i < MAX_RESULTS; ++i)
@@ -139,11 +151,27 @@ ImageSearchApplication::uploadFile (void)
 
 
 void
-ImageSearchApplication::search (void)
+ImageSearchApplication::searchByUpload (void)
 {
   std::string fileName
     = m_backend->setImage (m_fileUpload->spoolFileName (),
 			   m_fileUpload->clientFileName().toUTF8 ());
+
+  afterSearch (fileName);
+}
+
+void
+ImageSearchApplication::searchByImageId (const unsigned long imageId)
+{
+  std::string fileName = m_backend->setImage (imageId);
+
+  afterSearch (fileName);
+}
+
+
+void
+ImageSearchApplication::afterSearch (const std::string &fileName)
+{
 
   if (m_backend->isCurrentImageValid ())
     {

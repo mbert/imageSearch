@@ -37,7 +37,9 @@ namespace ImageSearch
       std::auto_ptr<Wt::WResource> m_currentSearchResource;
 
       void uploadFile (void);
-      void search (void);
+      void afterSearch (const std::string &fileName);
+      void searchByUpload (void);
+      void searchByImageId (const unsigned long imageId);
       void fileTooLarge (void);
       void enableSearchButton (void);
       void showCurrentSearch (const std::string &fileName);
