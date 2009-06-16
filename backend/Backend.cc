@@ -31,7 +31,7 @@ using namespace ImageSearch;
 #define DB_IMAGE_COLS 128
 #define DB_IMAGE_ROWS 128
 
-#define KEPT_COEFFS 60
+#define KEPT_COEFFS 40
 #define MAX_RESULTS 40
 
 #define DB_NAME "images"
