@@ -28,8 +28,8 @@ using namespace ImageSearch;
 #define THUMB_ROWS 250
 #define THUMB_COLS 250
 
-#define DB_IMAGE_COLS 256
-#define DB_IMAGE_ROWS 256
+#define DB_IMAGE_COLS 128
+#define DB_IMAGE_ROWS 128
 
 #define KEPT_COEFFS 60
 #define MAX_RESULTS 40

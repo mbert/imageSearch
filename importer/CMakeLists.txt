@@ -17,5 +17,5 @@ TARGET_LINK_LIBRARIES(importer
 	jpeg
 	CxxUtil
 	pqxx
-	boost_thread
+	boost_thread-mt
   ) 
