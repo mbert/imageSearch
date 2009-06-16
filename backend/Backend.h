@@ -25,6 +25,8 @@ namespace ImageSearch
     std::string setImage (const unsigned long imageId);
     bool isCurrentImageValid (void) const;
     std::string guessMimeType (void) const;
+    std::string getDbInfoText(void) const;
+    std::string getScoreTableInfoText(void) const;
     BlImageConstIterator performSearch (void);
     bool hasMore (const BlImageConstIterator &it) const;
     int getThumbHeight (void) const;

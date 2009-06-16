@@ -96,6 +96,7 @@ ImageSearchApplication::setupInputs (void)
     (SLOT (this, ImageSearchApplication::fileTooLarge));
   m_searchButton->clicked.connect
     (SLOT (this, ImageSearchApplication::uploadFile));
+
 }
 
 void
@@ -109,6 +110,12 @@ ImageSearchApplication::setupSearchResults (void)
     {
       m_searchResults.push_back (new SearchResult (resultSection));
     }
+
+  Div *footerSection = new Div ("footerSection", "footerSection", root ());
+  footerSection->addWidget (new Div ("clear"));
+  std::string infoText = "<p>" + m_backend->getDbInfoText () + "</p>"
+    + "<p>"  + m_backend->getScoreTableInfoText () + "</p>";
+  footerSection->addWidget (new Wt::WText (infoText));
 }
 
 void

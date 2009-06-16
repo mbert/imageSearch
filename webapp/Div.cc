@@ -2,6 +2,11 @@
 
 using namespace ImageSearch;
 
+Div::Div(const std::string& cssClass) : WContainerWidget ()
+{
+  setStyleClass (cssClass);
+}
+
 Div::Div(const std::string& cssClass, Wt::WContainerWidget *parent)
   : WContainerWidget (parent)
 {

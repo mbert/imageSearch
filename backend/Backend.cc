@@ -172,6 +172,20 @@ ImageSearchBackend::guessMimeType (void) const
   return ::guessMimeType (m_currentTempFile);
 }
 
+std::string
+ImageSearchBackend::getDbInfoText(void) const
+{
+  return std::string ("Database: " DB_NAME ", table: " TABLE_NAME "_")
+    + CxxUtil::itoa (DB_IMAGE_ROWS) + "_" + CxxUtil::itoa (DB_IMAGE_COLS)
+    + "_" + CxxUtil::itoa (KEPT_COEFFS);
+}
+
+std::string
+ImageSearchBackend::getScoreTableInfoText(void) const
+{
+  return m_scoreTable->getWeightsInfo ();
+}
+
 BLImage
 ImageSearchBackend::makeBlImage (const int id, const std::string &fileName,
 				 const std::string &text)

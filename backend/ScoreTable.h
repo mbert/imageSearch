@@ -6,6 +6,7 @@
 
 #include <WTools/ImageInformation.hh>
 
+#include <string>
 #include <memory>
 #include <vector>
 
@@ -20,6 +21,7 @@ namespace ImageSearch
     ScoreTable (int rows, int cols, int nKeptCoeffs, const DbImageList &images);
     virtual ~ScoreTable (void);
     void query (const ColorImage &image, ImageScoreList &scores);
+    std::string getWeightsInfo () const;
   private:
     virtual void p_query (ImageInformation &qY, ImageInformation &qU,
 			  ImageInformation &qV, ImageScoreList &scores) = 0;

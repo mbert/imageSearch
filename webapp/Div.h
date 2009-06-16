@@ -11,6 +11,7 @@ namespace ImageSearch
   class Div : public Wt::WContainerWidget
     {
     public:
+      Div (const std::string &cssClass);
       Div (const std::string& cssClass, Wt::WContainerWidget *parent);
       Div (const std::string& id, const std::string &cssClass,
 	   Wt::WContainerWidget *parent);

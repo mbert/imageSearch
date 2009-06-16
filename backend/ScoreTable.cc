@@ -5,6 +5,8 @@
 
 #include <boost/timer.hpp>
 
+#include <sstream>
+#include <iomanip>
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
@@ -45,6 +47,29 @@ ScoreTable::ScoreTable (int rows, int cols, int nKeptCoeffs,
 
 ScoreTable::~ScoreTable (void)
 {
+}
+
+std::string
+ScoreTable::getWeightsInfo () const
+{
+  std::stringstream result;
+  result.setf (std::ios::fixed, std::ios::floatfield);
+  result << "Y: ";
+  for (int i = 0; i < 6; ++i)
+    {
+      result << std::setprecision (4) << std::setw (7) << m_weightY[i] << ' ';
+    }
+  result << "U: ";
+  for (int i = 0; i < 6; ++i)
+    {
+      result << std::setprecision (4) << std::setw (7) << m_weightU[i] << ' ';
+    }
+  result << "V: ";
+  for (int i = 0; i < 6; ++i)
+    {
+      result << std::setprecision (4) << std::setw (7) << m_weightV[i] << ' ';
+    }
+  return result.str ();
 }
 
 void
