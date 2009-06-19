@@ -27,7 +27,7 @@ ScoreTable::ScoreTable (int rows, int cols, int nKeptCoeffs,
   m_lqcache.resize (MAX (m_rows, m_cols));
   for (int i = 0; i < m_lqcache.size (); i++)
     {
-      m_lqcache[i] = (int)floor (log ((double)i) / log ((double)2));
+      m_lqcache[i] = 1 + (int)floor (log ((double)i) / log ((double)2));
     }
   m_averageY.resize (m_nImages);
   m_averageU.resize (m_nImages);
@@ -76,7 +76,7 @@ void
 ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
 {
   boost::timer timer;
-  std::auto_ptr<ColorImage> scaled (image.fitInto (m_rows, m_cols, true));
+  std::auto_ptr<ColorImage> scaled (image.fitInto (m_rows, m_cols, ef_outerBorder));
   if (scaled->colormodel () != cm_yuv)
     {
       scaled->colormodel (cm_yuv);
@@ -91,6 +91,9 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
   std::auto_ptr<ImageInformation> lV (ImageComparison::imageInfoForLq
 				      (scaled->channel (2),
 				       m_nKeptCoeffs, Haar));
+  //std::cout << "query image: avg(y): " << lY->at(0).val () << std::endl;
+  //std::cout << "query image: avg(u): " << lU->at(0).val () << std::endl;
+  //std::cout << "query image: avg(V): " << lV->at(0).val () << std::endl;
 
   int elapsed = (int)(timer.elapsed () * 1000);
   std::cout << "creating feature vector from the the image took "
