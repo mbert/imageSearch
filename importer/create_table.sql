@@ -1,4 +1,4 @@
-create table images_128_128_40 (
+create table shirts_128_128_40 (
   id int not null primary key,
   file_name varchar(256) unique not null,
   features_y_plus bytea not null,

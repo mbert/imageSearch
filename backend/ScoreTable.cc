@@ -15,9 +15,28 @@ using namespace ImageSearch;
 
 #define MAX_WEIGHT_IDX 5
 
-const float ScoreTable::m_weightY[6] = {  4.04, 0.79, 0.45, 0.42, 0.41, 0.32 };
-const float ScoreTable::m_weightU[6] = { 15.25, 0.92, 0.53, 0.26, 0.14, 0.07 };
-const float ScoreTable::m_weightV[6] = { 22.62, 0.40, 0.73, 0.25, 0.15, 0.38 };
+//#define MY_WEIGHTS
+
+#ifdef MY_WEIGHTS
+
+static const float gl_weights[][N_WEIGHTS] = {
+  {  2.50, 1.66, 2.02, 1.04, 0.94, 0.60 },
+  {  9.60, 2.52, 0.88, 1.06, 0.56, 0.28 },
+  { 17.23, 0.72, 0.90, 0.28, 0.36, 0.54 }
+};
+const float* ScoreTable::m_weightY = gl_weights[0];
+const float* ScoreTable::m_weightU = gl_weights[1];
+const float* ScoreTable::m_weightV = gl_weights[2];
+
+#else
+const float*
+ScoreTable::m_weightY = ImageComparison::getWeights (SCANNED, 0);
+const float*
+ScoreTable::m_weightU = ImageComparison::getWeights (SCANNED, 1);
+const float*
+ScoreTable::m_weightV = ImageComparison::getWeights (SCANNED, 2);
+
+#endif
 
 ScoreTable::ScoreTable (int rows, int cols, int nKeptCoeffs,
 			const DbImageList &images)
@@ -73,10 +92,11 @@ ScoreTable::getWeightsInfo () const
 }
 
 void
-ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
+ScoreTable::query (const ColorImage &image, ImageScoreList &scores, bool debug)
 {
   boost::timer timer;
-  std::auto_ptr<ColorImage> scaled (image.fitInto (m_rows, m_cols, ef_outerBorder));
+  std::auto_ptr<ColorImage> scaled (image.fitInto (m_rows, m_cols,
+						   ef_outerBorder));
   if (scaled->colormodel () != cm_yuv)
     {
       scaled->colormodel (cm_yuv);
@@ -91,16 +111,20 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores)
   std::auto_ptr<ImageInformation> lV (ImageComparison::imageInfoForLq
 				      (scaled->channel (2),
 				       m_nKeptCoeffs, Haar));
-  //std::cout << "query image: avg(y): " << lY->at(0).val () << std::endl;
-  //std::cout << "query image: avg(u): " << lU->at(0).val () << std::endl;
-  //std::cout << "query image: avg(V): " << lV->at(0).val () << std::endl;
+
+  if (debug)
+    {
+      std::cerr << "query image: avg(y): " << lY->at(0).val () << std::endl;
+      std::cerr << "query image: avg(u): " << lU->at(0).val () << std::endl;
+      std::cerr << "query image: avg(V): " << lV->at(0).val () << std::endl;
+    }
 
   int elapsed = (int)(timer.elapsed () * 1000);
   std::cout << "creating feature vector from the the image took "
 	    << elapsed << " milliseconds." << std::endl;
   timer.restart ();
 
-  p_query (*lY, *lU, *lV, scores);
+  p_query (*lY, *lU, *lV, scores, debug);
 
   elapsed = (int)(timer.elapsed () * 1000);
   std::cout << "querying closest matches from all " << m_nImages

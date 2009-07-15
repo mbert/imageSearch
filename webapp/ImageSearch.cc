@@ -218,9 +218,10 @@ void
 ImageSearchApplication::showCurrentSearch (const std::string &fileName)
 {
   std::string mimeType = m_backend->guessMimeType ();
+  std::string thumbName = ImageSearchBackend::thumbName (fileName);
   m_currentSearchResource =
     std::auto_ptr<Wt::WFileResource> (new Wt::WFileResource (mimeType,
-							     fileName));
+							     thumbName));
   m_currentSelection->setResource (m_currentSearchResource.get ());
   m_currentSelection->show ();
 }

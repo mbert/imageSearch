@@ -31,6 +31,8 @@ namespace ImageSearch
     bool hasMore (const BlImageConstIterator &it) const;
     int getThumbHeight (void) const;
     int getThumbWidth (void) const;
+    int getNKeptCoefficients (void) const { return m_nKeptCoeffs; }
+    static std::string thumbName (const std::string &fileName);
 
     // database operations
     void saveDbImage (const DBImage &image);

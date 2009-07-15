@@ -13,12 +13,13 @@ namespace ImageSearch
     virtual ~BitArrayScoreTable (void);
   private:
     virtual void p_query (ImageInformation &qY, ImageInformation &qU,
-			  ImageInformation &qV, ImageScoreList &scores);
+			  ImageInformation &qV, ImageScoreList &scores,
+			  bool debug = false);
     void querySingleColor (ImageInformation &truncated, int pos,
 			   ImageScore &score, float average,
 			   const unsigned char *positives,
 			   const unsigned char *negatives,
-			   const float weights[]);
+			   const float weights[], bool debug = false);
     bool isSet (const CoeffInformation &ci, int pos,
 		const unsigned char positives[],
 		const unsigned char negatives[]);

@@ -21,6 +21,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <fstream>
 #include <memory>
 
 using namespace ImageSearch;
@@ -35,7 +36,7 @@ using namespace ImageSearch;
 #define MAX_RESULTS 40
 
 #define DB_NAME "images"
-#define TABLE_NAME "images"
+#define TABLE_NAME "shirts"
 #define HOSTADDR "127.0.0.1"
 #define USERNAME "md"
 #define PASSWORD "md"
@@ -50,6 +51,8 @@ static void fillFeatureVectors (const Image &img,
 
 static std::string guessMimeType (const std::string &fileName);
 static std::string tempImageName (const std::string &baseName);
+static void copyFile (const std::string &srcPath,
+		      const std::string &targetPath);
 
 ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
   : m_sizeY (THUMB_ROWS), m_sizeX (THUMB_COLS), m_maxResults (MAX_RESULTS),
@@ -57,7 +60,8 @@ ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
 {
   char buf[PATH_MAX];
   m_documentRoot = std::string (getcwd (buf, sizeof buf));
-  m_database = new PostgresQl (HOSTADDR, DB_NAME, TABLE_NAME, USERNAME, PASSWORD,
+  m_database = new PostgresQl (HOSTADDR, DB_NAME, TABLE_NAME,
+			       USERNAME, PASSWORD,
 			       DB_IMAGE_ROWS, DB_IMAGE_COLS, KEPT_COEFFS);
   if (m_imageDbPrefix.size () > 0)
     {
@@ -70,6 +74,21 @@ ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
     }
 }
 
+std::string
+ImageSearchBackend::thumbName (const std::string &fileName)
+{
+  FileName fn(fileName.c_str ());
+  const char* ext = fn.ext ();
+  if (ext == NULL || *ext == '\0')
+    {
+      return fileName + "_thumb";
+    }
+  std::string fExt = ext;
+  std::string result = fileName;
+  std::string::size_type pos = result.rfind (fExt);
+  return result.replace (pos, fExt.size (), "_thumb" + fExt);
+}
+
 void
 ImageSearchBackend::initScoreTable (void)
 {
@@ -80,7 +99,11 @@ ImageSearchBackend::initScoreTable (void)
 	{
 	  std::cout << "score table is uninitialised, doing this now."
 		    << std::endl;
+	  std::cout << "initialising for image settings: "
+		    << DB_IMAGE_ROWS << "x" << DB_IMAGE_COLS
+		    << "@" << KEPT_COEFFS << std::endl;
 	  DbImageList allImages = m_database->findAll ();
+
 	  std::cout << "loaded " << allImages.size ()
 		    << " images from the database." << std::endl;
 	  m_nDbImages = allImages.size ();
@@ -127,9 +150,11 @@ ImageSearchBackend::setImage (const std::string &srcPath,
       FileName fn (clientName.c_str ());
       std::auto_ptr<ColorImage> img (new ColorImage ());
       img->read (srcPath.c_str (), fn.guess ());
-      std::auto_ptr<ColorImage> scaled (img->fitInto ((int)(m_sizeY / 1.5),
-						      (int)(m_sizeX / 1.5)));
-      scaled->write (targetName.c_str ());
+      std::auto_ptr<ColorImage> thumb (img->fitInto ((int)(m_sizeY / 1.5),
+						     (int)(m_sizeX / 1.5)));
+      thumb->write (thumbName (targetName).c_str ());
+      //img->write (targetName.c_str ());
+      copyFile (srcPath, targetName);
       m_currentTempFile = targetName;
     }
   catch (const std::exception &e)
@@ -145,6 +170,7 @@ ImageSearchBackend::clearCurrentImage (void)
   if (m_currentTempFile.size () > 0)
     {
       (void)remove (m_currentTempFile.c_str ());
+      (void)remove (thumbName (m_currentTempFile).c_str ());
     }
 }
 
@@ -212,7 +238,7 @@ ImageSearchBackend::performSearch (void)
       assert (result.size () == m_nDbImages);
       std::auto_ptr<ColorImage> image (new ColorImage ());
       image->read (m_currentTempFile.c_str ());
-      m_scoreTable->query (*image, result);
+      m_scoreTable->query (*image, result, false);
       boost::timer timer;
       for (int i = 0; i < result.size () && i < m_maxResults; ++i)
 	{
@@ -373,3 +399,30 @@ tempImageName (const std::string &baseName)
   return std::string (buf);
 }
 
+static void
+copyFile (const std::string &srcPath, const std::string &targetPath)
+{
+  std::ifstream from (srcPath.c_str ());
+  if (!from)
+    {
+      throw std::ios::failure ("Unable to open src file: " + srcPath);
+    }
+
+  std::ofstream to (targetPath.c_str ());
+  if (!to)
+    {
+      throw std::ios::failure ("Unable to open target file: " + targetPath);
+    }
+
+    char ch;
+    while (from.get(ch))
+      {
+	to.put(ch);
+      }
+
+    if (!from.eof() || !to)
+      {
+	throw std::ios::failure ("Error copying: " + srcPath
+				 + " -> " + targetPath);
+      }
+}

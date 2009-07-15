@@ -18,12 +18,13 @@ namespace ImageSearch
     typedef IdListList::iterator IdListListIterator;
 
     virtual void p_query (ImageInformation &qY, ImageInformation &qU,
-			  ImageInformation &qV, ImageScoreList &scores);
+			  ImageInformation &qV, ImageScoreList &scores,
+			  bool debug = false);
     void addImageFeatureVector (int index, const Features &src,
 				IdListList &dest);
     void querySingleColor (ImageInformation &truncated, ImageScoreList &scores,
 			   IdListList &positives, IdListList &negatives,
-			   const float weights[]);
+			   const float weights[], bool debug = false);
 
     IdListList m_positiveY;
     IdListList m_negativeY;

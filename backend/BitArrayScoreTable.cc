@@ -80,18 +80,19 @@ BitArrayScoreTable::~BitArrayScoreTable (void)
 
 void
 BitArrayScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
-			     ImageInformation &qV, ImageScoreList &scores)
+			     ImageInformation &qV, ImageScoreList &scores,
+			     bool debug)
 {
 
   CoeffInformation ci;
   for (int i = 0; i < scores.size () ; ++i)
     {
       querySingleColor (qY, i, scores[i], m_averageY[i], m_positiveY,
-			m_negativeY, m_weightY);
+			m_negativeY, m_weightY, debug);
       querySingleColor (qU, i, scores[i], m_averageU[i], m_positiveU,
-			m_negativeU, m_weightU);
+			m_negativeU, m_weightU, debug);
       querySingleColor (qV, i, scores[i], m_averageV[i], m_positiveV,
-			m_negativeV, m_weightV);
+			m_negativeV, m_weightV, debug);
     }
 
 }
@@ -118,7 +119,7 @@ BitArrayScoreTable::querySingleColor (ImageInformation &truncated, int pos,
 				      ImageScore &score, float average,
 				      const unsigned char *positives,
 				      const unsigned char *negatives,
-				      const float weights[])
+				      const float weights[], bool debug)
 {
   CoeffInformation ci;
 

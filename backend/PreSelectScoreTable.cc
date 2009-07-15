@@ -72,26 +72,70 @@ PreSelectScoreTable::~PreSelectScoreTable (void)
 
 void
 PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
-			      ImageInformation &qV, ImageScoreList &scores)
+			      ImageInformation &qV, ImageScoreList &scores,
+			      bool debug)
 {
 
   double avgY = qY.at(0).val ();
   double avgU = qU.at(0).val ();
   double avgV = qV.at(0).val ();
+
   int difference;
   for (int i = 0; i < scores.size (); ++i)
     {
+      if (debug && i == 446)
+	{
+	  std::cerr << "average Y: " << m_averageY[i]
+		    << " vs. " << avgY << std::endl;
+	  std::cerr << "score before Y: "
+		    << scores[i].getScore() << std::endl;
+	}
       difference = (int)(avgY - m_averageY[i]);
       scores[i].addToScore (m_weightY[0] * (::abs (difference)));
+      if (debug && i == 446)
+	{
+	  std::cerr << "average U: " << m_averageU[i]
+		    << " vs. " << avgU << std::endl;
+	  std::cerr << "score before U: "
+		    << scores[i].getScore() << std::endl;
+	}
       difference = (int)(avgU - m_averageU[i]);
       scores[i].addToScore (m_weightU[0] * (::abs (difference)));
+      if (debug && i == 446)
+	{
+	  std::cerr << "average V: " << m_averageV[i]
+		    << " vs. " << avgV << std::endl;
+	  std::cerr << "score before V: "
+		    << scores[i].getScore() << std::endl;
+	}
       difference = (int)(avgV - m_averageV[i]);
       scores[i].addToScore (m_weightV[0] * (::abs (difference)));
+      if (debug && i == 446)
+	{
+	  std::cerr << "score after V: "
+		    << scores[i].getScore() << std::endl;
+	}
     }
 
-  querySingleColor (qY, scores, m_positiveY, m_negativeY, m_weightY);
-  querySingleColor (qU, scores, m_positiveU, m_negativeU, m_weightU);
-  querySingleColor (qV, scores, m_positiveV, m_negativeV, m_weightV);
+  if (debug)
+    {
+      std::cerr << "score before Y: " << scores[446].getScore() << std::endl;
+    }
+  querySingleColor (qY, scores, m_positiveY, m_negativeY, m_weightY, debug);
+  if (debug)
+    {
+      std::cerr << "score before U: " << scores[446].getScore() << std::endl;
+    }
+  querySingleColor (qU, scores, m_positiveU, m_negativeU, m_weightU, debug);
+  if (debug)
+    {
+      std::cerr << "score before V: " << scores[446].getScore() << std::endl;
+    }
+  querySingleColor (qV, scores, m_positiveV, m_negativeV, m_weightV, debug);
+  if (debug)
+    {
+      std::cerr << "score after V: " << scores[446].getScore() << std::endl;
+    }
 }
 
 void
@@ -99,7 +143,7 @@ PreSelectScoreTable::querySingleColor (ImageInformation &truncated,
 				       ImageScoreList &scores,
 				       IdListList &positives,
 				       IdListList &negatives,
-				       const float weights[])
+				       const float weights[], bool debug)
 {
   CoeffInformation ci;
   IdListIterator it;

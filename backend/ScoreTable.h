@@ -20,15 +20,17 @@ namespace ImageSearch
   public:
     ScoreTable (int rows, int cols, int nKeptCoeffs, const DbImageList &images);
     virtual ~ScoreTable (void);
-    void query (const ColorImage &image, ImageScoreList &scores);
+    void query (const ColorImage &image, ImageScoreList &scores,
+		bool debug = false);
     std::string getWeightsInfo () const;
   private:
     virtual void p_query (ImageInformation &qY, ImageInformation &qU,
-			  ImageInformation &qV, ImageScoreList &scores) = 0;
+			  ImageInformation &qV, ImageScoreList &scores,
+			  bool debug = false) = 0;
   protected:
-    static const float m_weightY[];
-    static const float m_weightU[];
-    static const float m_weightV[];
+    static const float *m_weightY;
+    static const float *m_weightU;
+    static const float *m_weightV;
 
     int getLevel (int i);
     int bin (int y, int x);
