@@ -15,7 +15,7 @@ using namespace ImageSearch;
 
 #define MAX_WEIGHT_IDX 5
 
-//#define MY_WEIGHTS
+#define MY_WEIGHTS
 
 #ifdef MY_WEIGHTS
 
