@@ -19,16 +19,22 @@ using namespace ImageSearch;
 
 #ifdef MY_WEIGHTS
 
+//static const float gl_weights[][N_WEIGHTS] = {
+//  {  2.50, 1.66, 2.02, 1.04, 0.94, 0.60 },
+//  {  9.60, 2.52, 0.88, 1.06, 0.56, 0.28 },
+//  { 17.23, 0.72, 0.90, 0.28, 0.36, 0.54 }
+//};
 static const float gl_weights[][N_WEIGHTS] = {
-  {  2.50, 1.66, 2.02, 1.04, 0.94, 0.60 },
-  {  9.60, 2.52, 0.88, 1.06, 0.56, 0.28 },
-  { 17.23, 0.72, 0.90, 0.28, 0.36, 0.54 }
+  {  1.25, 3.32, 4.04, 2.08, 1.88, 1.20 },
+  {  4.80, 5.04, 1.76, 2.12, 1.12, 0.56 },
+  {  8.62, 1.44, 1.80, 0.56, 0.72, 1.08 }
 };
 const float* ScoreTable::m_weightY = gl_weights[0];
 const float* ScoreTable::m_weightU = gl_weights[1];
 const float* ScoreTable::m_weightV = gl_weights[2];
 
 #else
+
 const float*
 ScoreTable::m_weightY = ImageComparison::getWeights (SCANNED, 0);
 const float*
