@@ -238,7 +238,7 @@ ImageSearchBackend::performSearch (void)
       assert (result.size () == m_nDbImages);
       std::auto_ptr<ColorImage> image (new ColorImage ());
       image->read (m_currentTempFile.c_str ());
-      m_scoreTable->query (*image, result, false);
+      m_scoreTable->query (*image, result, true);
       boost::timer timer;
       for (int i = 0; i < result.size () && i < m_maxResults; ++i)
 	{

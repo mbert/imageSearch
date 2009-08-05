@@ -83,7 +83,7 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
   int difference;
   for (int i = 0; i < scores.size (); ++i)
     {
-      if (debug && i == 446)
+      if (debug && (i == 8337 || i == 9995))
 	{
 	  std::cerr << "average Y: " << m_averageY[i]
 		    << " vs. " << avgY << std::endl;
@@ -92,7 +92,7 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 	}
       difference = (int)(avgY - m_averageY[i]);
       scores[i].addToScore (m_weightY[0] * (::abs (difference)));
-      if (debug && i == 446)
+      if (debug && (i == 8337 || i == 9995))
 	{
 	  std::cerr << "average U: " << m_averageU[i]
 		    << " vs. " << avgU << std::endl;
@@ -101,7 +101,7 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 	}
       difference = (int)(avgU - m_averageU[i]);
       scores[i].addToScore (m_weightU[0] * (::abs (difference)));
-      if (debug && i == 446)
+      if (debug && (i == 8337 || i == 9995))
 	{
 	  std::cerr << "average V: " << m_averageV[i]
 		    << " vs. " << avgV << std::endl;
@@ -110,7 +110,7 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 	}
       difference = (int)(avgV - m_averageV[i]);
       scores[i].addToScore (m_weightV[0] * (::abs (difference)));
-      if (debug && i == 446)
+      if (debug && (i == 8337 || i == 9995))
 	{
 	  std::cerr << "score after V: "
 		    << scores[i].getScore() << std::endl;
@@ -119,22 +119,22 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 
   if (debug)
     {
-      std::cerr << "score before Y: " << scores[446].getScore() << std::endl;
+      std::cerr << "score before Y: " << scores[9995].getScore() << " / " << scores[8337].getScore() << std::endl;
     }
   querySingleColor (qY, scores, m_positiveY, m_negativeY, m_weightY, debug);
   if (debug)
     {
-      std::cerr << "score before U: " << scores[446].getScore() << std::endl;
+      std::cerr << "score before U: " << scores[9995].getScore() << " / " << scores[8337].getScore()  << std::endl;
     }
   querySingleColor (qU, scores, m_positiveU, m_negativeU, m_weightU, debug);
   if (debug)
     {
-      std::cerr << "score before V: " << scores[446].getScore() << std::endl;
+      std::cerr << "score before V: " << scores[9995].getScore() << " / " << scores[8337].getScore()  << std::endl;
     }
   querySingleColor (qV, scores, m_positiveV, m_negativeV, m_weightV, debug);
   if (debug)
     {
-      std::cerr << "score after V: " << scores[446].getScore() << std::endl;
+      std::cerr << "score after V: " << scores[9995].getScore() << " / " << scores[8337].getScore()  << std::endl;
     }
 }
 
