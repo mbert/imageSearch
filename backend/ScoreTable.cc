@@ -24,10 +24,15 @@ using namespace ImageSearch;
 //  {  9.60, 2.52, 0.88, 1.06, 0.56, 0.28 },
 //  { 17.23, 0.72, 0.90, 0.28, 0.36, 0.54 }
 //};
+//static const float gl_weights[][N_WEIGHTS] = {
+//  {  1.25, 3.32, 4.04, 2.08, 1.88, 1.20 },
+//  {  4.80, 5.04, 1.76, 2.12, 1.12, 0.56 },
+//  {  4.31, 1.44, 1.80, 0.56, 0.72, 1.08 }
+//};
 static const float gl_weights[][N_WEIGHTS] = {
   {  1.25, 3.32, 4.04, 2.08, 1.88, 1.20 },
   {  4.80, 5.04, 1.76, 2.12, 1.12, 0.56 },
-  {  8.62, 1.44, 1.80, 0.56, 0.72, 1.08 }
+  {  4.31, 1.44, 1.80, 0.56, 0.72, 1.08 }
 };
 const float* ScoreTable::m_weightY = gl_weights[0];
 const float* ScoreTable::m_weightU = gl_weights[1];
