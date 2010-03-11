@@ -8,7 +8,9 @@
 #include <boost/timer.hpp>
 
 #include <WImage/ColorImage.hh>
+#include <WTools/ImageComparison.hh>
 #include <WImage/FileName.hh>
+
 
 #include <unistd.h>
 #include <climits>
@@ -32,6 +34,9 @@ static std::string guessMimeType (const std::string &fileName);
 static std::string tempImageName (const std::string &baseName);
 static void copyFile (const std::string &srcPath,
 		      const std::string &targetPath);
+static void fillFeatureVectors (const Image &img,
+				Features &posFeatures, Features &negFeatures);
+
 
 ImageSearchBackend::ImageSearchBackend (const std::string &imageDbPrefix)
   : m_sizeY (THUMB_ROWS), m_sizeX (THUMB_COLS), m_maxResults (MAX_RESULTS),
@@ -263,3 +268,73 @@ copyFile (const std::string &srcPath, const std::string &targetPath)
 				 + " -> " + targetPath);
       }
 }
+
+
+std::auto_ptr<ReadOnlyImage>
+ImageSearchBackend::createImageFeatures (const std::string &path, int rows, int cols)
+{
+  std::auto_ptr<ColorImage> img (new ColorImage ());
+  img->read (path.c_str ());
+  size_t pos = path.rfind ("/");
+  std::string fileName ((pos != std::string::npos && pos < path.size () - 1)
+			? path.substr (pos + 1) : path);
+
+  std::auto_ptr<ColorImage> scaled (img->fitInto (rows, cols, ef_outerBorder));
+  img.reset ();
+  if (scaled->colormodel () != cm_yuv)
+    {
+      scaled->colormodel (cm_yuv);
+    }
+  //scaled->write ("foo.ppm");
+
+  std::auto_ptr<Image> lY (ImageComparison::truncateForLq
+			   (scaled->channel (0), m_nKeptCoeffs, Haar));
+  Features pfY, nfY;
+  ::fillFeatureVectors (*lY, pfY, nfY);
+  float aY = lY->at (0, 0);
+  lY.reset ();
+
+  std::auto_ptr<Image> lU (ImageComparison::truncateForLq
+			   (scaled->channel (1), m_nKeptCoeffs, Haar));
+  Features pfU, nfU;
+  ::fillFeatureVectors (*lU, pfU, nfU);
+  float aU = lU->at (0, 0);
+  lU.reset ();
+
+  std::auto_ptr<Image> lV (ImageComparison::truncateForLq
+			   (scaled->channel (2), m_nKeptCoeffs, Haar));
+  Features pfV, nfV;
+  ::fillFeatureVectors (*lV, pfV, nfV);
+  float aV = lV->at (0, 0);
+  lV.reset ();
+
+
+  return std::auto_ptr<ReadOnlyImage> (new ReadOnlyImage (fileName, pfY, nfY, pfU,
+							  nfU, pfV, nfV, aY, aU, aV));
+
+}
+
+static void
+fillFeatureVectors (const Image &img,
+		    Features &posFeatures, Features &negFeatures)
+{
+  size_t size = (size_t)ceil (img.size () / 8.0);
+  posFeatures.assign (size, (unsigned char)0);
+  negFeatures.assign (size, (unsigned char)0);
+
+  for (int i = 0; i < img.size (); ++i)
+    {
+      // todo: only if non zero!
+      int byte = i / 8;
+      int bit = i % 8;
+      if (img.at (i) > 0)
+	{
+	  SET_BIT (posFeatures[byte], bit);
+	}
+      else if (img.at (i) < 0)
+	{
+	  SET_BIT (negFeatures[byte], bit);
+	}
+    }
+}
+

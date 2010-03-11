@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
+#include <climits>
 
 using namespace ImageSearch;
 
@@ -49,29 +50,16 @@ ScoreTable::m_weightV = ImageComparison::getWeights (SCANNED, 2);
 
 #endif
 
-ScoreTable::ScoreTable (int rows, int cols, int nKeptCoeffs,
-			const DbImageList &images)
+static bool floatEquals (const float f1, const float f2);
+
+ScoreTable::ScoreTable (int rows, int cols, int nKeptCoeffs)
   : m_rows (rows), m_cols (cols),
-    m_nKeptCoeffs (nKeptCoeffs), m_nImages (images.size ())
+    m_nKeptCoeffs (nKeptCoeffs), m_nImages (-1)
 {
   m_lqcache.resize (MAX (m_rows, m_cols));
   for (int i = 0; i < m_lqcache.size (); i++)
     {
       m_lqcache[i] = 1 + (int)floor (log ((double)i) / log ((double)2));
-    }
-  m_averageY.resize (m_nImages);
-  m_averageU.resize (m_nImages);
-  m_averageV.resize (m_nImages);
-  int index;
-  for (DbImageConstIterator it = images.begin (); it != images.end (); ++it)
-    {
-      index = (*it)->getId ();
-      assert (index < m_averageY.size ());
-      m_averageY[index] = (*it)->getAverageY ();
-      assert (index < m_averageU.size ());
-      m_averageU[index] = (*it)->getAverageU ();
-      assert (index < m_averageV.size ());
-      m_averageV[index] = (*it)->getAverageV ();
     }
 }
 
@@ -79,8 +67,39 @@ ScoreTable::~ScoreTable (void)
 {
 }
 
+void
+ScoreTable::doLoadImages (const ImageFeaturesList &images)
+{
+  m_nImages = images.size ();
+}
+
+void
+ScoreTable::doAppendImage (const unsigned long id, const ImageFeatures &image)
+{
+  m_averageY.push_back (image.getAverageY ());
+  assert (floatEquals (m_averageY[id], image.getAverageY ()));
+
+  m_averageU.push_back (image.getAverageU ());
+  assert (floatEquals (m_averageU[id], image.getAverageU ()));
+
+  m_averageV.push_back (image.getAverageV ());
+  assert (floatEquals (m_averageV[id], image.getAverageV ()));
+}
+
+static bool
+floatEquals (const float f1, const float f2)
+{
+  float f = fabs (f1 - f2);
+  //  if (f >= FLT_EPSILON)
+  //    {
+  //      std::cerr << "OOOO: " << f << std::endl;
+  //    }
+  return f < FLT_EPSILON;
+}
+
+
 std::string
-ScoreTable::getWeightsInfo () const
+ScoreTable::getWeightsInfo (void) const
 {
   std::stringstream result;
   result.setf (std::ios::fixed, std::ios::floatfield);
@@ -105,6 +124,10 @@ ScoreTable::getWeightsInfo () const
 void
 ScoreTable::query (const ColorImage &image, ImageScoreList &scores, bool debug)
 {
+  if (m_nImages < 1)
+    {
+      throw std::invalid_argument ("Error, images have not been loaded.");
+    }
   boost::timer timer;
   std::auto_ptr<ColorImage> scaled (image.fitInto (m_rows, m_cols,
 						   ef_outerBorder));

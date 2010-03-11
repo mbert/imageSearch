@@ -23,7 +23,7 @@ namespace ImageSearch
   private:
     virtual void p_save (const DBImage &image);
     virtual int p_getLastId (void);
-    virtual DbImageList p_findAll (int nMax = 0);
+    virtual ImageFeaturesList p_findAll (int nMax = 0);
     virtual std::auto_ptr<DBImage> p_getById (int id);
     std::string getTableName (void);
     std::auto_ptr<pqxx::connection> createConnection (void);

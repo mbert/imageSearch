@@ -8,9 +8,11 @@ namespace ImageSearch
 
   class PreSelectScoreTable : public ScoreTable {
   public:
-    PreSelectScoreTable (int rows, int cols, int nKeptCoeffs,
-			 const DbImageList &images);
+    PreSelectScoreTable (int rows, int cols, int nKeptCoeffs);
     virtual ~PreSelectScoreTable (void);
+  protected:
+    virtual void doLoadImages (const ImageFeaturesList &images);
+    virtual void doAppendImage (const unsigned long id, const ImageFeatures &image);
   private:
     typedef std::vector<int> IdList;
     typedef IdList::iterator IdListIterator;

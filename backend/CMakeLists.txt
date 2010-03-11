@@ -4,6 +4,7 @@ INCLUDE_DIRECTORIES(
 ADD_LIBRARY(Backend
 	ImageSearchBackend.cc
 	DbBasedImageSearchBackend.cc
+	SerializationBasedImageSearchBackend.cc
 	ScoreTable.cc
 	PreSelectScoreTable.cc
 	postgresql/PostgresQl.cc

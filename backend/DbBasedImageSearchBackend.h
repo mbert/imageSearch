@@ -16,7 +16,8 @@ namespace ImageSearch
 
     // stuff used by importer
     std::auto_ptr<DBImage> createDbImage (const std::string &path,
-					  int id, int rows, int cols);
+					  const unsigned long id,
+					  int rows, int cols);
     int getLastDbImageId (void);
     void saveDbImage (const DBImage &image);
 
@@ -26,7 +27,7 @@ namespace ImageSearch
   private:
     void initScoreTable (void);
     std::auto_ptr<DBImage> getDbImageById (int id);
-    DbImageList getAllDbImages (void);
+    ImageFeaturesList getAllDbImages (void);
     Database *m_database;
   };
 

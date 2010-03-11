@@ -72,10 +72,10 @@ PostgresQl::p_getLastId (void)
   return -1;
 }
 
-DbImageList
+ImageFeaturesList
 PostgresQl::p_findAll (int nMax)
 {
-  DbImageList result;
+  ImageFeaturesList result;
   try
     {
       std::auto_ptr<pqxx::connection> con = createConnection ();

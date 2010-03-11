@@ -2,7 +2,7 @@
 #define IMAGE_SEARCH_BACKEND_H
 
 #include "BLImage.h"
-#include "DBImage.h"
+#include "ReadOnlyImage.h"
 #include "ScoreTable.h"
 
 #include <string>
@@ -20,7 +20,7 @@ namespace ImageSearch
     void clearCurrentImage (void);
     std::string setImage (const std::string &srcPath,
 			  const std::string &clientName);
-    virtual std::string setImage (const unsigned long imageId);
+    std::string setImage (const unsigned long imageId);
     bool isCurrentImageValid (void) const;
     std::string guessMimeType (void) const;
     std::string getDbInfoText(void) const;
@@ -32,9 +32,12 @@ namespace ImageSearch
     int getNKeptCoefficients (void) const { return m_nKeptCoeffs; }
     static std::string thumbName (const std::string &fileName);
 
-    // database operations
+    // Operations for indexing
     int getDbImageRows (void) const;
     int getDbImageCols (void) const;
+    std::auto_ptr<ReadOnlyImage> createImageFeatures (const std::string &path,
+						      int rows, int cols);
+    int getNImages (void) const { return m_nDbImages; }
 
   protected:
     virtual std::string getImageNameById (const unsigned long id) = 0;

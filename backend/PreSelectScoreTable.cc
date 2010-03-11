@@ -5,11 +5,9 @@
 
 using namespace ImageSearch;
 
-PreSelectScoreTable::PreSelectScoreTable (int rows, int cols, int nKeptCoeffs,
-					  const DbImageList &images)
-  : ScoreTable (rows, cols, nKeptCoeffs, images)
+PreSelectScoreTable::PreSelectScoreTable (int rows, int cols, int nKeptCoeffs )
+  : ScoreTable (rows, cols, nKeptCoeffs)
 {
-  boost::timer timer;
   int size = rows * cols;
   std::cout << "resizing id-list-lists..." << std::endl;
   m_positiveY.resize (size);
@@ -19,32 +17,52 @@ PreSelectScoreTable::PreSelectScoreTable (int rows, int cols, int nKeptCoeffs,
   m_positiveV.resize (size);
   m_negativeV.resize (size);
 
+}
+
+PreSelectScoreTable::~PreSelectScoreTable (void)
+{
+}
+
+void
+PreSelectScoreTable::doLoadImages (const ImageFeaturesList &images)
+{
+  boost::timer timer;
+  ScoreTable::doLoadImages (images);
+
   // a single vector has about 16 bytes of size
   // each color channel has m_nKeptCoeffs nonzero coeffs, i.e. we get
   // 3 * 60 * sizeof int
-  int usedSpace = 6 * 16 * size
-    + 3 * images.size () * m_nKeptCoeffs * sizeof (int);
+  int usedSpace = 6 * 16 * m_rows * m_cols
+    + 3 * m_nImages * m_nKeptCoeffs * sizeof (int);
   std::cout << "allocated "
 	    << usedSpace << " bytes, that is "
 	    << usedSpace / 1024 << " kilobytes." << std::endl;
 
   std::cout << "filling them..." << std::endl;
-  int id;
-  for (DbImageConstIterator it = images.begin (); it != images.end (); ++it)
+  unsigned long id = 0;
+  for (ImageFeaturesConstIterator it = images.begin (); it != images.end (); ++it)
     {
-      id = (*it)->getId ();
-      addImageFeatureVector (id, (*it)->getFeaturesYPlus (), m_positiveY);
-      addImageFeatureVector (id, (*it)->getFeaturesYMinus (), m_negativeY);
-      addImageFeatureVector (id, (*it)->getFeaturesUPlus (), m_positiveU);
-      addImageFeatureVector (id, (*it)->getFeaturesUMinus (), m_negativeU);
-      addImageFeatureVector (id, (*it)->getFeaturesVPlus (), m_positiveV);
-      addImageFeatureVector (id, (*it)->getFeaturesVMinus (), m_negativeV);
+      appendImage (id, **it);
+      ++id;
     }
   std::cout << "done." << std::endl;
   int elapsed = (int)(timer.elapsed () * 1000);
   std::cout << "creating the PreSelectScoreTable for all " << m_nImages
 	    << " images took " << elapsed << " milliseconds." << std::endl;
 
+}
+
+void
+PreSelectScoreTable::doAppendImage (const unsigned long id, const ImageFeatures &image)
+{
+  ScoreTable::doAppendImage (id, image);
+
+  addImageFeatureVector (id, image.getFeaturesYPlus (), m_positiveY);
+  addImageFeatureVector (id, image.getFeaturesYMinus (), m_negativeY);
+  addImageFeatureVector (id, image.getFeaturesUPlus (), m_positiveU);
+  addImageFeatureVector (id, image.getFeaturesUMinus (), m_negativeU);
+  addImageFeatureVector (id, image.getFeaturesVPlus (), m_positiveV);
+  addImageFeatureVector (id, image.getFeaturesVMinus (), m_negativeV);
 }
 
 void
@@ -64,10 +82,6 @@ PreSelectScoreTable::addImageFeatureVector (int id, const Features &src,
 	  dest[i].push_back (id);
 	}
     }
-}
-
-PreSelectScoreTable::~PreSelectScoreTable (void)
-{
 }
 
 void

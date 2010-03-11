@@ -1,17 +1,12 @@
 #ifndef IMAGE_SEARCH_DBIMAGE_H
 #define IMAGE_SEARCH_DBIMAGE_H
 
-#include <boost/shared_ptr.hpp>
-
-#include <string>
-#include <vector>
+#include "ImageFeatures.h"
 
 namespace ImageSearch
 {
 
-  typedef std::basic_string<unsigned char> Features;
-
-  class DBImage {
+  class DBImage : public ImageFeatures {
   public:
     DBImage (void) : m_id (-1) { }
 
@@ -26,19 +21,31 @@ namespace ImageSearch
       m_featuresVPlus (featuresVPlus), m_featuresVMinus (featuresVMinus),
       m_averageY (averageY), m_averageU (averageU), m_averageV (averageV) { }
 
+    DBImage (unsigned long id, const ImageFeatures &image)
+      : m_id (id), m_fileName (image.getFileName ()),
+      m_featuresYPlus (image.getFeaturesYPlus ()),
+      m_featuresYMinus (image.getFeaturesYMinus ()),
+      m_featuresUPlus (image.getFeaturesUPlus ()),
+      m_featuresUMinus (image.getFeaturesUMinus ()),
+      m_featuresVPlus (image.getFeaturesVPlus ()),
+      m_featuresVMinus (image.getFeaturesVMinus ()),
+      m_averageY (image.getAverageY ()),
+      m_averageU (image.getAverageU ()),
+      m_averageV (image.getAverageV ()) { }
+
     virtual ~DBImage (void) {}
 
-    unsigned long getId (void) const { return m_id; }
-    const std::string &getFileName (void) const { return m_fileName; }
-    const Features &getFeaturesYPlus (void) const { return m_featuresYPlus; }
-    const Features &getFeaturesYMinus (void) const { return m_featuresYMinus; }
-    const Features &getFeaturesUPlus (void) const { return m_featuresUPlus; }
-    const Features &getFeaturesUMinus (void) const { return m_featuresUMinus; }
-    const Features &getFeaturesVPlus (void) const { return m_featuresVPlus; }
-    const Features &getFeaturesVMinus (void) const { return m_featuresVMinus; }
-    float getAverageY (void) const { return m_averageY; }
-    float getAverageU (void) const { return m_averageU; }
-    float getAverageV (void) const { return m_averageV; }
+    virtual unsigned long getId (void) const { return m_id; }
+    virtual const std::string &getFileName (void) const { return m_fileName; }
+    virtual const Features &getFeaturesYPlus (void) const { return m_featuresYPlus; }
+    virtual const Features &getFeaturesYMinus (void) const { return m_featuresYMinus; }
+    virtual const Features &getFeaturesUPlus (void) const { return m_featuresUPlus; }
+    virtual const Features &getFeaturesUMinus (void) const { return m_featuresUMinus; }
+    virtual const Features &getFeaturesVPlus (void) const { return m_featuresVPlus; }
+    virtual const Features &getFeaturesVMinus (void) const { return m_featuresVMinus; }
+    virtual float getAverageY (void) const { return m_averageY; }
+    virtual float getAverageU (void) const { return m_averageU; }
+    virtual float getAverageV (void) const { return m_averageV; }
 
     void setId (unsigned long id) { m_id = id; }
     void setFileName (std::string &fileName) { m_fileName = fileName; }
@@ -66,8 +73,6 @@ namespace ImageSearch
     float m_averageV;
   };
 
-  typedef std::vector<boost::shared_ptr<DBImage> > DbImageList;
-  typedef DbImageList::const_iterator DbImageConstIterator;
 };
 
 

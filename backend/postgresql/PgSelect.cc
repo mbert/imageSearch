@@ -29,7 +29,7 @@ void Pg::SelectCount::operator() (argument_type &t)
 
 
 Pg::SelectAll::SelectAll (const std::string &tableName,
-			  DbImageList &result, int size)
+			  ImageFeaturesList &result, int size)
   : pqxx::transactor<> ("SelectAll"),
     m_size (size), m_tableName (tableName), m_result (result)
 {

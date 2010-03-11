@@ -18,11 +18,16 @@ namespace ImageSearch
 
   class ScoreTable {
   public:
-    ScoreTable (int rows, int cols, int nKeptCoeffs, const DbImageList &images);
+    ScoreTable (int rows, int cols, int nKeptCoeffs);
     virtual ~ScoreTable (void);
     void query (const ColorImage &image, ImageScoreList &scores,
 		bool debug = false);
     std::string getWeightsInfo () const;
+    void loadImages (const ImageFeaturesList &images) { doLoadImages (images); }
+    void appendImage (const unsigned long id, const ImageFeatures &image) { doAppendImage (id, image); }
+  protected:
+    virtual void doLoadImages (const ImageFeaturesList &images);
+    virtual void doAppendImage (const unsigned long id, const ImageFeatures &image);
   private:
     virtual void p_query (ImageInformation &qY, ImageInformation &qU,
 			  ImageInformation &qV, ImageScoreList &scores,
@@ -36,9 +41,9 @@ namespace ImageSearch
     int bin (int y, int x);
 
     std::vector<int> m_lqcache;
+    int m_nImages;
     const int m_rows;
     const int m_cols;
-    const int m_nImages;
     const int m_nKeptCoeffs;
     std::vector<float> m_averageY;
     std::vector<float> m_averageU;

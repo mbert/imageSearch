@@ -19,3 +19,17 @@ TARGET_LINK_LIBRARIES(dbBasedImporter
 	pqxx
 	boost_thread-mt
   ) 
+
+ADD_EXECUTABLE(serializationBasedImporter
+	serializationBasedMain.cc
+  )
+
+TARGET_LINK_LIBRARIES(serializationBasedImporter
+	Backend
+	wavelet
+	Magick++
+	jpeg
+	CxxUtil
+	pqxx
+	boost_thread-mt
+  ) 

@@ -28,7 +28,7 @@ namespace ImageSearch
     // Danger, this transation only works with successive IDs, no gaps!
     class SelectAll : public pqxx::transactor<> {
     public:
-      SelectAll (const std::string &tableName, DbImageList &result, int size);
+      SelectAll (const std::string &tableName, ImageFeaturesList &result, int size);
       virtual ~SelectAll (void);
       void operator() (argument_type &t);
 
@@ -36,7 +36,7 @@ namespace ImageSearch
       void addChunkToResult(argument_type &t, int from, int maxNum);
       int m_size;
       std::string m_tableName;
-      DbImageList &m_result;
+      ImageFeaturesList &m_result;
     };
 
     class SelectById : public pqxx::transactor<> {
