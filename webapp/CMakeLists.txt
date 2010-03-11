@@ -21,6 +21,7 @@ TARGET_LINK_LIBRARIES(imageSearch.wt
 	CxxUtil
 	wt
 	wthttp
+	wtext
 	pqxx
 	boost_thread-mt
   ) 

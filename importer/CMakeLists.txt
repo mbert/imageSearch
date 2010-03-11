@@ -6,11 +6,11 @@ LINK_DIRECTORIES(
 	${IMAGESEARCH_BINARY_DIR}/backend
   )
 
-ADD_EXECUTABLE(importer
-	main.cc
+ADD_EXECUTABLE(dbBasedImporter
+	dbBasedMain.cc
   )
 
-TARGET_LINK_LIBRARIES(importer
+TARGET_LINK_LIBRARIES(dbBasedImporter
 	Backend
 	wavelet
 	Magick++

@@ -1,4 +1,4 @@
-#include "Backend.h"
+#include "DbBasedImageSearchBackend.h"
 #include "DBImage.h"
 
 #include <string>
@@ -11,7 +11,7 @@ int
 main(int argc, char **argv)
 {
   std::cout << "importer start" << std::endl;
-  ImageSearchBackend backend ("");
+  DbBasedImageSearchBackend backend ("");
   int id = backend.getLastDbImageId () + 1;
   const int rows = backend.getDbImageRows ();
   const int cols = backend.getDbImageCols ();

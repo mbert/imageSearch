@@ -2,7 +2,7 @@
 #include "Div.h"
 #include "SearchResult.h"
 
-#include <Backend.h>
+#include <DbBasedImageSearchBackend.h>
 
 #include <Wt/WBreak>
 #include <Wt/WText>
@@ -26,7 +26,7 @@ ImageSearchApplication::ImageSearchApplication (const Wt::WEnvironment& env)
   : Wt::WApplication (env)
 {
 
-  m_backend = new ImageSearchBackend ("/images/dehdabehs");
+  m_backend = new DbBasedImageSearchBackend ("/images/dehdabehs");
 
   setTitle ("Image Search");
 
@@ -38,8 +38,8 @@ ImageSearchApplication::ImageSearchApplication (const Wt::WEnvironment& env)
 
   useStyleSheet ("imageSearch.css");
 
-  Wt::WEnvironment::ArgumentMap argumentMap = env.arguments ();
-  Wt::WEnvironment::ArgumentValues image = argumentMap["imageQueryId"];
+  Wt::Http::ParameterMap argumentMap = env.getParameterMap ();
+  Wt::Http::ParameterValues image = argumentMap["imageQueryId"];
   if (image.size () > 0)
     {
       unsigned long imageId;
@@ -88,13 +88,13 @@ ImageSearchApplication::setupInputs (void)
 
   Div *clearDiv = new Div ("clear", topContent);
 
-  m_fileUpload->uploaded.connect
+  m_fileUpload->uploaded().connect
     (SLOT (this, ImageSearchApplication::searchByUpload));
-  m_fileUpload->changed.connect
+  m_fileUpload->changed().connect
     (SLOT (this, ImageSearchApplication::enableSearchButton));
-  m_fileUpload->fileTooLarge.connect
+  m_fileUpload->fileTooLarge().connect
     (SLOT (this, ImageSearchApplication::fileTooLarge));
-  m_searchButton->clicked.connect
+  m_searchButton->clicked().connect
     (SLOT (this, ImageSearchApplication::uploadFile));
 
 }

@@ -2,11 +2,10 @@ INCLUDE_DIRECTORIES(
 	${IMAGESEARCH_SOURCE_DIR}/backend
   )
 ADD_LIBRARY(Backend
-	Backend.cc
+	ImageSearchBackend.cc
+	DbBasedImageSearchBackend.cc
 	ScoreTable.cc
-	BitArrayScoreTable.cc
 	PreSelectScoreTable.cc
-	ScoreTableFactory.cc
 	postgresql/PostgresQl.cc
 	postgresql/PgSelect.cc
   )
