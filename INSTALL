@@ -1,0 +1,21 @@
+Build Prerequisites
+===================
+
+- C++ development stuff (I use g++ 4.4)
+
+- cmake (I use version 2.8.5)
+
+- libwt development stuff (I have libwt-dev, libwtdbo-dev, libwtext-dev,
+  libwthttp-dev, version 3.10a installed, some may not be necessary)
+
+- some boost development libs (I have libboost-date-time-dev libboost-dev
+  libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev
+  libboost-signals-dev libboost-thread-dev, version 1.40.0 installed,
+  some may not be necessary)
+
+- libpqxx-dev (I have 2.6.9, but it currently requires patching one of the
+  headers)
+
+- libWavelet, current CVS version, can be obtained from sourceforge [1].
+
+[1] http://sourceforge.net/projects/wavelet/
