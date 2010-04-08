@@ -13,4 +13,22 @@ webapp/imageSearch.css
 webapp/imageSearch.css~
 webapp/imageSearch.wt
 webapp/images/
+*/*~
+*~
+doc/hackerTalk/hackerTalk.aux
+doc/hackerTalk/hackerTalk.log
+doc/hackerTalk/hackerTalk.nav
+doc/hackerTalk/hackerTalk.out
+doc/hackerTalk/hackerTalk.pdf
+doc/hackerTalk/hackerTalk.snm
+doc/hackerTalk/hackerTalk.toc
+doc/hackerTalk/hackerTalkPrintVersion.pdf
+Debug/
+doc/hackerTalk/auto/
+importer/broken.jpg
+importer/dbBasedImporter
+importer/serializationBasedImporter
+webapp/imagesearch.log
+webapp/imagesearch.valgrind
+webapp/massif.out.19596
 

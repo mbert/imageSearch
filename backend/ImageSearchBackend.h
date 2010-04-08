@@ -37,20 +37,20 @@ namespace ImageSearch
     int getDbImageCols (void) const;
     std::auto_ptr<ReadOnlyImage> createImageFeatures (const std::string &path,
 						      int rows, int cols);
-    int getNImages (void) const { return m_nDbImages; }
+    int nImages (void) const { return m_scoreTable->nImages (); }
 
   protected:
     virtual std::string getImageNameById (const unsigned long id) = 0;
     static ScoreTable *m_scoreTable;
-    static unsigned long m_nDbImages;
     int m_nKeptCoeffs;
     std::string m_documentRoot;
     std::string m_imageDbPrefix;
 
   private:
-    BLImage makeBlImage (const int id, const std::string &fileName,
-			 const std::string &text);
-    BLImage getBlImage (const ImageScore &score);
+    BLImage p_makeBlImage (const int id, const std::string &fileName,
+			   const std::string &text);
+    BLImage p_getBlImage (const ImageScore &score);
+    void p_sortScores (const ImageScoreList &scores, ImageScoreList &result);
     std::string m_currentTempFile;
     int m_sizeY;
     int m_sizeX;

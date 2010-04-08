@@ -1,7 +1,7 @@
 #include "ImageSearchBackend.h"
 #include "ImageScore.h"
 #include "macros.h"
-#include "config.h"
+#include "../config.h"
 
 #include <cxxutil/utils.h>
 
@@ -27,7 +27,6 @@
 using namespace ImageSearch;
 
 ScoreTable * ImageSearchBackend::m_scoreTable = NULL;
-unsigned long ImageSearchBackend::m_nDbImages = 0;
 
 
 static std::string guessMimeType (const std::string &fileName);
@@ -148,7 +147,7 @@ ImageSearchBackend::getScoreTableInfoText(void) const
 }
 
 BLImage
-ImageSearchBackend::makeBlImage (const int id, const std::string &fileName,
+ImageSearchBackend::p_makeBlImage (const int id, const std::string &fileName,
 				 const std::string &text)
 {
   std::string thumbNail = m_documentRoot + m_imageDbPrefix + "/thumb_"
@@ -165,21 +164,29 @@ ImageSearchBackend::performSearch (void)
   m_searchResults.clear ();
   if (isCurrentImageValid ())
     {
-      ImageScoreList result;
-      for (int i = 0; i < m_nDbImages; ++i)
+      ImageScoreList result, sorted;
+      for (int i = 0; i < m_scoreTable->nImages (); ++i)
 	{
 	  result.push_back (ImageScore (i));
 	}
-      assert (result.size () == m_nDbImages);
+      assert (result.size () == m_scoreTable->nImages ());
       std::auto_ptr<ColorImage> image (new ColorImage ());
       image->read (m_currentTempFile.c_str ());
+
       m_scoreTable->query (*image, result, false);
+
       boost::timer timer;
-      for (int i = 0; i < result.size () && i < m_maxResults; ++i)
-	{
-	  m_searchResults.push_back (getBlImage (result[i]));
-	}
+      p_sortScores (result, sorted);
       int elapsed = (int)(timer.elapsed () * 1000);
+      std::cout << "sorting the query results took "
+		<< elapsed << " milliseconds." << std::endl;
+
+      timer.restart ();
+      for (int i = 0; i < sorted.size () && i < m_maxResults; ++i)
+	{
+	  m_searchResults.push_back (p_getBlImage (sorted[i]));
+	}
+      elapsed = (int)(timer.elapsed () * 1000);
       std::cout << "loading the images took "
 		<< elapsed << " milliseconds." << std::endl;
     }
@@ -188,12 +195,12 @@ ImageSearchBackend::performSearch (void)
 }
 
 BLImage
-ImageSearchBackend::getBlImage (const ImageScore &score)
+ImageSearchBackend::p_getBlImage (const ImageScore &score)
 {
   std::string fileName = getImageNameById (score.getId ());
   std::string text = "File: " + fileName
     + ", score: " + CxxUtil::dtoa (score.getScore ());
-  return makeBlImage (score.getId (), fileName, text);
+  return p_makeBlImage (score.getId (), fileName, text);
 }
 
 bool
@@ -312,6 +319,63 @@ ImageSearchBackend::createImageFeatures (const std::string &path, int rows, int 
   return std::auto_ptr<ReadOnlyImage> (new ReadOnlyImage (fileName, pfY, nfY, pfU,
 							  nfU, pfV, nfV, aY, aU, aV));
 
+}
+
+void
+ImageSearchBackend::p_sortScores (const ImageScoreList &scores, ImageScoreList &result)
+{
+  result.resize (m_maxResults);
+  ImageScoreConstIterator it = scores.begin ();
+  float worstScore = (*it).getScore ();
+  int worstPosition;
+  int lastPos = 0;
+
+  for (; it != scores.end (); ++it)
+    {
+
+      const ImageScore &score = *it;
+
+      if (lastPos < m_maxResults)
+	{
+
+	  int pos = lastPos;
+	  if (lastPos == 0 || score.getScore () > worstScore)
+	    {
+	      worstPosition = pos;
+	      worstScore = result[worstPosition].getScore ();
+	    }
+	  result[pos] = score;
+	  lastPos++;
+
+	}
+      else if (score.getScore () < worstScore)
+	{
+
+	  result[worstPosition] = score;
+	  for (int i = 0; i < m_maxResults; ++i)
+	    {
+	      if (result[i].getScore () > result[worstPosition].getScore ())
+		{
+		  worstPosition = i;
+		}
+	    }
+	  worstScore = result[worstPosition].getScore ();
+
+	  for (int i = 0; i < lastPos; ++i)
+	    {
+	      if (i != worstPosition && result[worstPosition].getScore () < result[i].getScore ())
+		{
+		  std::cerr << "Error, " << result[worstPosition].getScore ()
+			    << " is less than " << result[i].getScore () << " but it should not." << std::endl;
+		  assert (0);
+		}
+	    }
+
+	}
+
+    }
+
+  std::sort (result.begin (), result.end ());
 }
 
 static void

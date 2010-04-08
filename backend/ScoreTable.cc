@@ -1,4 +1,5 @@
 #include "ScoreTable.h"
+#include "../config.h"
 
 #include <WImage/ColorImage.hh>
 #include <WTools/ImageComparison.hh>
@@ -13,10 +14,6 @@
 #include <climits>
 
 using namespace ImageSearch;
-
-#define MAX_WEIGHT_IDX 5
-
-#define MY_WEIGHTS
 
 #ifdef MY_WEIGHTS
 
@@ -74,8 +71,10 @@ ScoreTable::doLoadImages (const ImageFeaturesList &images)
 }
 
 void
-ScoreTable::doAppendImage (const unsigned long id, const ImageFeatures &image)
+ScoreTable::doAppendImage (const ImageFeatures &image)
 {
+  const unsigned long id = m_nImages;
+
   m_averageY.push_back (image.getAverageY ());
   assert (floatEquals (m_averageY[id], image.getAverageY ()));
 
@@ -84,6 +83,9 @@ ScoreTable::doAppendImage (const unsigned long id, const ImageFeatures &image)
 
   m_averageV.push_back (image.getAverageV ());
   assert (floatEquals (m_averageV[id], image.getAverageV ()));
+
+  m_fileName.push_back (image.getFileName ());
+  assert (m_fileName[id] == image.getFileName ());
 }
 
 static bool
@@ -163,12 +165,6 @@ ScoreTable::query (const ColorImage &image, ImageScoreList &scores, bool debug)
   elapsed = (int)(timer.elapsed () * 1000);
   std::cout << "querying closest matches from all " << m_nImages
 	    << " images took " << elapsed << " milliseconds." << std::endl;
-  timer.restart ();
-
-  std::sort (scores.begin (), scores.end ());
-  elapsed = (int)(timer.elapsed () * 1000);
-  std::cout << "sorting the query results took "
-	    << elapsed << " milliseconds." << std::endl;
 }
 
 int
@@ -184,3 +180,9 @@ ScoreTable::getLevel (int i)
   return m_lqcache[i];
 }
 
+std::string
+ScoreTable::getImageNameById (const unsigned long id)
+{
+  assert (id < m_fileName.size ());
+  return m_fileName[id];
+}

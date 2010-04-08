@@ -32,4 +32,5 @@ TARGET_LINK_LIBRARIES(serializationBasedImporter
 	CxxUtil
 	pqxx
 	boost_thread-mt
+	boost_serialization-mt
   ) 

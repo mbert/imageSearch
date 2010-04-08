@@ -2,7 +2,7 @@
 #include "PreSelectScoreTable.h"
 #include "postgresql/PostgresQl.h"
 #include "macros.h"
-#include "config.h"
+#include "../config.h"
 
 #include <boost/thread/mutex.hpp>
 
@@ -21,7 +21,7 @@ DbBasedImageSearchBackend::DbBasedImageSearchBackend (const std::string &imageDb
 
   if (m_imageDbPrefix.size () > 0)
     {
-      initScoreTable ();
+      p_initScoreTable ();
     }
   else
     {
@@ -36,7 +36,7 @@ DbBasedImageSearchBackend::~DbBasedImageSearchBackend (void)
 }
 
 void
-DbBasedImageSearchBackend::initScoreTable (void)
+DbBasedImageSearchBackend::p_initScoreTable (void)
 {
   if (m_scoreTable == NULL)
     {
@@ -52,7 +52,6 @@ DbBasedImageSearchBackend::initScoreTable (void)
 
 	  std::cout << "loaded " << allImages.size ()
 		    << " images from the database." << std::endl;
-	  m_nDbImages = allImages.size ();
 	  m_scoreTable = new PreSelectScoreTable (getDbImageRows (),
 						  getDbImageCols (),
 						  m_nKeptCoeffs);
@@ -74,7 +73,7 @@ DbBasedImageSearchBackend::initScoreTable (void)
 std::string
 DbBasedImageSearchBackend::getImageNameById (const unsigned long id)
 {
-  std::auto_ptr<DBImage> dbImage (getDbImageById (id));
+  std::auto_ptr<DBImage> dbImage (p_getDbImageById (id));
   return dbImage->getFileName ();
 }
 
@@ -85,13 +84,13 @@ DbBasedImageSearchBackend::saveDbImage (const DBImage &image)
 }
 
 ImageFeaturesList
-DbBasedImageSearchBackend::getAllDbImages (void)
+DbBasedImageSearchBackend::p_getAllDbImages (void)
 {
   return m_database->findAll ();
 }
 
 std::auto_ptr<DBImage>
-DbBasedImageSearchBackend::getDbImageById (int id)
+DbBasedImageSearchBackend::p_getDbImageById (int id)
 {
   return m_database->getById (id);
 }

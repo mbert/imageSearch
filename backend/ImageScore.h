@@ -29,6 +29,7 @@ namespace ImageSearch
 
   typedef std::vector<ImageScore> ImageScoreList;
   typedef ImageScoreList::iterator ImageScoreIterator;
+  typedef ImageScoreList::const_iterator ImageScoreConstIterator;
 
 };
 

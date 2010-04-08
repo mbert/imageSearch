@@ -1,8 +1,9 @@
 #include "ImageSearch.h"
 #include "Div.h"
 #include "SearchResult.h"
+#include "../config.h"
 
-#include <DbBasedImageSearchBackend.h>
+#include <SerializationBasedImageSearchBackend.h>
 
 #include <Wt/WBreak>
 #include <Wt/WText>
@@ -18,23 +19,21 @@
 #include <iostream>
 #include <fstream>
 
-#define MAX_RESULTS 16
-
 using namespace ImageSearch;
 
 ImageSearchApplication::ImageSearchApplication (const Wt::WEnvironment& env)
   : Wt::WApplication (env)
 {
 
-  m_backend = new DbBasedImageSearchBackend ("/images/dehdabehs");
+  m_backend = new SerializationBasedImageSearchBackend (DB_PREFIX, DB_FILE);
 
   setTitle ("Image Search");
 
-  setupTopSection ();
+  p_setupTopSection ();
 
-  setupInputs ();
+  p_setupInputs ();
 
-  setupSearchResults();
+  p_setupSearchResults();
 
   useStyleSheet ("imageSearch.css");
 
@@ -46,7 +45,7 @@ ImageSearchApplication::ImageSearchApplication (const Wt::WEnvironment& env)
       try
 	{
 	  imageId = CxxUtil::atoi (image[0]);
-	  searchByImageId (imageId);
+	  p_searchByImageId (imageId);
 	}
       catch (const std::exception e)
 	{
@@ -57,7 +56,7 @@ ImageSearchApplication::ImageSearchApplication (const Wt::WEnvironment& env)
 }
 
 void
-ImageSearchApplication::setupTopSection (void)
+ImageSearchApplication::p_setupTopSection (void)
 {
   Div *atTop = new Div ("atTop", "atTop", root ());
 
@@ -73,7 +72,7 @@ ImageSearchApplication::setupTopSection (void)
 }
 
 void
-ImageSearchApplication::setupInputs (void)
+ImageSearchApplication::p_setupInputs (void)
 {
   Div *topContent = new Div ("topContent", "topContent", root ());
   Div *descriptionDiv = new Div ("searchInputLine", topContent);
@@ -89,18 +88,18 @@ ImageSearchApplication::setupInputs (void)
   Div *clearDiv = new Div ("clear", topContent);
 
   m_fileUpload->uploaded().connect
-    (SLOT (this, ImageSearchApplication::searchByUpload));
+    (SLOT (this, ImageSearchApplication::p_searchByUpload));
   m_fileUpload->changed().connect
-    (SLOT (this, ImageSearchApplication::enableSearchButton));
+    (SLOT (this, ImageSearchApplication::p_enableSearchButton));
   m_fileUpload->fileTooLarge().connect
-    (SLOT (this, ImageSearchApplication::fileTooLarge));
+    (SLOT (this, ImageSearchApplication::p_fileTooLarge));
   m_searchButton->clicked().connect
-    (SLOT (this, ImageSearchApplication::uploadFile));
+    (SLOT (this, ImageSearchApplication::p_uploadFile));
 
 }
 
 void
-ImageSearchApplication::setupSearchResults (void)
+ImageSearchApplication::p_setupSearchResults (void)
 {
   Div *resultSection = new Div ("resultSection", "resultSection", root ());
   Div *resultTextDiv = new Div ("resultText", "resultText", resultSection);
@@ -119,7 +118,7 @@ ImageSearchApplication::setupSearchResults (void)
 }
 
 void
-ImageSearchApplication::updateSearchResults (void)
+ImageSearchApplication::p_updateSearchResults (void)
 {
   BlImageConstIterator resIt = m_backend->performSearch ();
   int i = 0;
@@ -150,7 +149,7 @@ ImageSearchApplication::~ImageSearchApplication (void)
 }
 
 void
-ImageSearchApplication::uploadFile (void)
+ImageSearchApplication::p_uploadFile (void)
 {
   m_searchButton->disable ();
   m_fileUpload->upload ();
@@ -158,55 +157,55 @@ ImageSearchApplication::uploadFile (void)
 
 
 void
-ImageSearchApplication::searchByUpload (void)
+ImageSearchApplication::p_searchByUpload (void)
 {
   std::string fileName
     = m_backend->setImage (m_fileUpload->spoolFileName (),
 			   m_fileUpload->clientFileName().toUTF8 ());
 
-  afterSearch (fileName);
+  p_afterSearch (fileName);
 }
 
 void
-ImageSearchApplication::searchByImageId (const unsigned long imageId)
+ImageSearchApplication::p_searchByImageId (const unsigned long imageId)
 {
   std::string fileName = m_backend->setImage (imageId);
 
-  afterSearch (fileName);
+  p_afterSearch (fileName);
 }
 
 
 void
-ImageSearchApplication::afterSearch (const std::string &fileName)
+ImageSearchApplication::p_afterSearch (const std::string &fileName)
 {
 
   if (m_backend->isCurrentImageValid ())
     {
       m_resultText->setStyleClass ("title");
       m_resultText->setText ("Search Results:");
-      showCurrentSearch (fileName);
+      p_showCurrentSearch (fileName);
     }
   else
     {
       m_resultText->setStyleClass ("error");
       m_resultText->setText ("Invalid file.");
-      hideCurrentSearch ();
+      p_hideCurrentSearch ();
     }
-  updateSearchResults ();
+  p_updateSearchResults ();
 }
 
 
 void
-ImageSearchApplication::fileTooLarge (void)
+ImageSearchApplication::p_fileTooLarge (void)
 {
   m_resultText->setStyleClass ("error");
   m_resultText->setText ("Image file too large.");
-  hideCurrentSearch ();
+  p_hideCurrentSearch ();
 }
 
 
 void
-ImageSearchApplication::enableSearchButton (void)
+ImageSearchApplication::p_enableSearchButton (void)
 {
   if (!m_searchButton->isEnabled ())
     {
@@ -215,7 +214,7 @@ ImageSearchApplication::enableSearchButton (void)
 }
 
 void
-ImageSearchApplication::showCurrentSearch (const std::string &fileName)
+ImageSearchApplication::p_showCurrentSearch (const std::string &fileName)
 {
   std::string mimeType = m_backend->guessMimeType ();
   std::string thumbName = ImageSearchBackend::thumbName (fileName);
@@ -227,7 +226,7 @@ ImageSearchApplication::showCurrentSearch (const std::string &fileName)
 }
 
 void
-ImageSearchApplication::hideCurrentSearch (void)
+ImageSearchApplication::p_hideCurrentSearch (void)
 {
   m_currentSelection->hide ();
 }

@@ -13,6 +13,14 @@
 class ColorImage;
 class Image;
 
+namespace boost
+{
+  namespace serialization
+  {
+    class access;
+  }
+}
+
 namespace ImageSearch
 {
 
@@ -24,11 +32,27 @@ namespace ImageSearch
 		bool debug = false);
     std::string getWeightsInfo () const;
     void loadImages (const ImageFeaturesList &images) { doLoadImages (images); }
-    void appendImage (const unsigned long id, const ImageFeatures &image) { doAppendImage (id, image); }
+    void appendImage (const ImageFeatures &image) { doAppendImage (image); ++m_nImages; }
+    virtual std::string getImageNameById (const unsigned long id);
+    inline int nImages (void) { return m_nImages; }
   protected:
     virtual void doLoadImages (const ImageFeaturesList &images);
-    virtual void doAppendImage (const unsigned long id, const ImageFeatures &image);
+    virtual void doAppendImage (const ImageFeatures &image);
   private:
+    friend class boost::serialization::access;
+    template<class Archive> void
+      serialize (Archive & ar, const unsigned int version)
+      {
+        ar & m_lqcache;
+	ar & m_nImages;
+        ar & m_rows;
+	ar & m_cols;
+	ar & m_nKeptCoeffs;
+	ar & m_averageY;
+	ar & m_averageU;
+	ar & m_averageV;
+	ar & m_fileName;
+      }
     virtual void p_query (ImageInformation &qY, ImageInformation &qU,
 			  ImageInformation &qV, ImageScoreList &scores,
 			  bool debug = false) = 0;
@@ -42,12 +66,13 @@ namespace ImageSearch
 
     std::vector<int> m_lqcache;
     int m_nImages;
-    const int m_rows;
-    const int m_cols;
-    const int m_nKeptCoeffs;
+    int m_rows;
+    int m_cols;
+    int m_nKeptCoeffs;
     std::vector<float> m_averageY;
     std::vector<float> m_averageU;
     std::vector<float> m_averageV;
+    std::vector<std::string> m_fileName;
   };
 
 };

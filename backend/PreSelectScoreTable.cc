@@ -8,6 +8,7 @@ using namespace ImageSearch;
 PreSelectScoreTable::PreSelectScoreTable (int rows, int cols, int nKeptCoeffs )
   : ScoreTable (rows, cols, nKeptCoeffs)
 {
+  m_nImages = 0;
   int size = rows * cols;
   std::cout << "resizing id-list-lists..." << std::endl;
   m_positiveY.resize (size);
@@ -17,6 +18,11 @@ PreSelectScoreTable::PreSelectScoreTable (int rows, int cols, int nKeptCoeffs )
   m_positiveV.resize (size);
   m_negativeV.resize (size);
 
+}
+
+PreSelectScoreTable::PreSelectScoreTable (void)
+  : ScoreTable (0, 0, 0)
+{
 }
 
 PreSelectScoreTable::~PreSelectScoreTable (void)
@@ -39,11 +45,9 @@ PreSelectScoreTable::doLoadImages (const ImageFeaturesList &images)
 	    << usedSpace / 1024 << " kilobytes." << std::endl;
 
   std::cout << "filling them..." << std::endl;
-  unsigned long id = 0;
   for (ImageFeaturesConstIterator it = images.begin (); it != images.end (); ++it)
     {
-      appendImage (id, **it);
-      ++id;
+      appendImage (**it);
     }
   std::cout << "done." << std::endl;
   int elapsed = (int)(timer.elapsed () * 1000);
@@ -53,20 +57,22 @@ PreSelectScoreTable::doLoadImages (const ImageFeaturesList &images)
 }
 
 void
-PreSelectScoreTable::doAppendImage (const unsigned long id, const ImageFeatures &image)
+PreSelectScoreTable::doAppendImage (const ImageFeatures &image)
 {
-  ScoreTable::doAppendImage (id, image);
+  const unsigned long id = m_nImages;
 
-  addImageFeatureVector (id, image.getFeaturesYPlus (), m_positiveY);
-  addImageFeatureVector (id, image.getFeaturesYMinus (), m_negativeY);
-  addImageFeatureVector (id, image.getFeaturesUPlus (), m_positiveU);
-  addImageFeatureVector (id, image.getFeaturesUMinus (), m_negativeU);
-  addImageFeatureVector (id, image.getFeaturesVPlus (), m_positiveV);
-  addImageFeatureVector (id, image.getFeaturesVMinus (), m_negativeV);
+  ScoreTable::doAppendImage (image);
+
+  p_addImageFeatureVector (id, image.getFeaturesYPlus (), m_positiveY);
+  p_addImageFeatureVector (id, image.getFeaturesYMinus (), m_negativeY);
+  p_addImageFeatureVector (id, image.getFeaturesUPlus (), m_positiveU);
+  p_addImageFeatureVector (id, image.getFeaturesUMinus (), m_negativeU);
+  p_addImageFeatureVector (id, image.getFeaturesVPlus (), m_positiveV);
+  p_addImageFeatureVector (id, image.getFeaturesVMinus (), m_negativeV);
 }
 
 void
-PreSelectScoreTable::addImageFeatureVector (int id, const Features &src,
+PreSelectScoreTable::p_addImageFeatureVector (int id, const Features &src,
 					    IdListList &dest)
 {
   int size = m_rows * m_cols;
@@ -135,17 +141,17 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
     {
       std::cerr << "score before Y: " << scores[9995].getScore() << " / " << scores[8337].getScore() << std::endl;
     }
-  querySingleColor (qY, scores, m_positiveY, m_negativeY, m_weightY, debug);
+  p_querySingleColor (qY, scores, m_positiveY, m_negativeY, m_weightY, debug);
   if (debug)
     {
       std::cerr << "score before U: " << scores[9995].getScore() << " / " << scores[8337].getScore()  << std::endl;
     }
-  querySingleColor (qU, scores, m_positiveU, m_negativeU, m_weightU, debug);
+  p_querySingleColor (qU, scores, m_positiveU, m_negativeU, m_weightU, debug);
   if (debug)
     {
       std::cerr << "score before V: " << scores[9995].getScore() << " / " << scores[8337].getScore()  << std::endl;
     }
-  querySingleColor (qV, scores, m_positiveV, m_negativeV, m_weightV, debug);
+  p_querySingleColor (qV, scores, m_positiveV, m_negativeV, m_weightV, debug);
   if (debug)
     {
       std::cerr << "score after V: " << scores[9995].getScore() << " / " << scores[8337].getScore()  << std::endl;
@@ -153,7 +159,7 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 }
 
 void
-PreSelectScoreTable::querySingleColor (ImageInformation &truncated,
+PreSelectScoreTable::p_querySingleColor (ImageInformation &truncated,
 				       ImageScoreList &scores,
 				       IdListList &positives,
 				       IdListList &negatives,

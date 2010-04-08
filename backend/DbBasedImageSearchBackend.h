@@ -25,9 +25,9 @@ namespace ImageSearch
     virtual std::string getImageNameById (const unsigned long id);
 
   private:
-    void initScoreTable (void);
-    std::auto_ptr<DBImage> getDbImageById (int id);
-    ImageFeaturesList getAllDbImages (void);
+    void p_initScoreTable (void);
+    std::auto_ptr<DBImage> p_getDbImageById (int id);
+    ImageFeaturesList p_getAllDbImages (void);
     Database *m_database;
   };
 

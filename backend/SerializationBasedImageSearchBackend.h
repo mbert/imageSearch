@@ -11,16 +11,21 @@ namespace ImageSearch
   class SerializationBasedImageSearchBackend : public ImageSearchBackend {
 
   public:
-    SerializationBasedImageSearchBackend (const std::string &imageDbPrefix);
+    SerializationBasedImageSearchBackend (const std::string &imageDbPrefix,
+					  const std::string &archiveFileName);
+    SerializationBasedImageSearchBackend (const std::string &archiveFileName);
     virtual ~SerializationBasedImageSearchBackend (void);
-    void addImage (const unsigned long id, const std::string imageName,
+    void addImage (const std::string imageName,
 		   const int rows, const int cols);
+    void save (void);
 
   protected:
     virtual std::string getImageNameById (const unsigned long id);
 
   private:
-    void initScoreTable (void);
+    typedef enum { EMPTY, LOAD } InitMode;
+    void p_initScoreTable (const InitMode &initMode);
+    std::string m_archiveFileName;
   };
 
 };

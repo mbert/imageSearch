@@ -6,6 +6,8 @@ ADD_LIBRARY(Backend
 	DbBasedImageSearchBackend.cc
 	SerializationBasedImageSearchBackend.cc
 	ScoreTable.cc
+	BinaryScoreTableSerializer.cc
+	TextScoreTableSerializer.cc
 	PreSelectScoreTable.cc
 	postgresql/PostgresQl.cc
 	postgresql/PgSelect.cc

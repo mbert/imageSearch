@@ -1,4 +1,5 @@
 #include "SerializationBasedImageSearchBackend.h"
+#include "../config.h"
 
 #include <string>
 #include <stdexcept>
@@ -9,33 +10,45 @@ using namespace ImageSearch;
 int
 main(int argc, char **argv)
 {
-  std::cout << "importer start" << std::endl;
-  SerializationBasedImageSearchBackend backend ("");
+  std::cout << "importer start, dumping to " << DB_FILE << std::endl;
+  SerializationBasedImageSearchBackend backend (DB_FILE);
   const int rows = backend.getDbImageRows ();
   const int cols = backend.getDbImageCols ();
   int rc = 0;
   std::string imageName;
-  int id = 0;
+  int i = 0;
   while (!std::cin.eof ())
     {
       std::getline (std::cin, imageName);
       if (imageName.size () > 0)
 	{
-	  std::cout << "processing image: \"" << imageName
-		    << "\"..." << std::endl;
+	  if (i > 0)
+	    {
+	      std::cout << ", ";
+	    }
+	  std::cout << "processing image: \"" << imageName << "\"";
 	  try
 	    {
-	      backend.addImage (id, imageName, rows, cols);
-	      ++id;
+	      backend.addImage (imageName, rows, cols);
+	      ++i;
 	    }
 	  catch (const std::exception &e)
 	    {
-	      std::cerr << "exception caught: " << e.what () << std::endl;
+	      std::cerr << imageName << ": exception caught: " << e.what () << std::endl;
 	      rc++;
 	    }
 	}
     }
-  std::cout << "importer successfully finished, indexed " << backend.getNImages () << " images." << std::endl;
+  std::cout << "saving..." << std::endl;
+  try
+    {
+      backend.save ();
+    }
+  catch (const std::exception &e)
+    {
+      std::cerr << "exception caught: " << e.what () << std::endl;
+    }
+  std::cout << "importer successfully finished, indexed " << backend.nImages () << " images." << std::endl;
   return rc;
 }
 

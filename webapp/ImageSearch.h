@@ -36,18 +36,18 @@ namespace ImageSearch
       std::vector<SearchResult*> m_searchResults;
       std::auto_ptr<Wt::WResource> m_currentSearchResource;
 
-      void uploadFile (void);
-      void afterSearch (const std::string &fileName);
-      void searchByUpload (void);
-      void searchByImageId (const unsigned long imageId);
-      void fileTooLarge (void);
-      void enableSearchButton (void);
-      void showCurrentSearch (const std::string &fileName);
-      void hideCurrentSearch (void);
-      void setupTopSection (void);
-      void setupInputs (void);
-      void setupSearchResults (void);
-      void updateSearchResults (void);
+      void p_uploadFile (void);
+      void p_afterSearch (const std::string &fileName);
+      void p_searchByUpload (void);
+      void p_searchByImageId (const unsigned long imageId);
+      void p_fileTooLarge (void);
+      void p_enableSearchButton (void);
+      void p_showCurrentSearch (const std::string &fileName);
+      void p_hideCurrentSearch (void);
+      void p_setupTopSection (void);
+      void p_setupInputs (void);
+      void p_setupSearchResults (void);
+      void p_updateSearchResults (void);
     };
 
 };
