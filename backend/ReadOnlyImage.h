@@ -2,12 +2,22 @@
 #define IMAGE_SEARCH_READONLY_IMAGE_H
 
 #include "ImageFeatures.h"
+#include <boost/serialization/split_member.hpp>
+
+namespace boost
+{
+  namespace serialization
+  {
+    class access;
+  }
+}
 
 namespace ImageSearch
 {
 
   class ReadOnlyImage : public ImageFeatures {
   public:
+    ReadOnlyImage (void) { }
     ReadOnlyImage (const std::string &fileName,
 		   const Features &featuresYPlus, const Features &featuresYMinus,
 		   const Features &featuresUPlus, const Features &featuresUMinus,
@@ -33,16 +43,78 @@ namespace ImageSearch
     virtual float getAverageV (void) const { return m_averageV; }
 
   private:
-    const std::string m_fileName;
-    const Features m_featuresYPlus;
-    const Features m_featuresUPlus;
-    const Features m_featuresVPlus;
-    const Features m_featuresYMinus;
-    const Features m_featuresUMinus;
-    const Features m_featuresVMinus;
-    const float m_averageY;
-    const float m_averageU;
-    const float m_averageV;
+    friend class boost::serialization::access;
+    template<class Archive>
+      void save (Archive & ar, const unsigned int version) const
+      {
+	ar & m_fileName;
+	std::basic_string<char> s;
+	s = fromFeatures (m_featuresYPlus);
+	ar & s;
+	s = fromFeatures (m_featuresUPlus);
+	ar & s;
+	s = fromFeatures (m_featuresVPlus);
+	ar & s;
+	s = fromFeatures (m_featuresYMinus);
+	ar & s;
+	s = fromFeatures (m_featuresUMinus);
+	ar & s;
+	s = fromFeatures (m_featuresVMinus);
+	ar & s;
+	ar & m_averageY;
+	ar & m_averageU;
+	ar & m_averageV;
+      }
+    template<class Archive>
+      void load (Archive & ar, const unsigned int version)
+      {
+	std::basic_string<char> s;
+	ar & m_fileName;
+	ar & s;
+	m_featuresYPlus = toFeatures (s);
+	ar & s;
+	m_featuresUPlus = toFeatures (s);
+	ar & s;
+	m_featuresVPlus = toFeatures (s);
+	ar & s;
+	m_featuresYMinus = toFeatures (s);
+	ar & s;
+	m_featuresUMinus = toFeatures (s);
+	ar & s;
+	m_featuresVMinus = toFeatures (s);
+	ar & m_averageY;
+	ar & m_averageU;
+	ar & m_averageV;
+      }
+    BOOST_SERIALIZATION_SPLIT_MEMBER ()
+    std::string m_fileName;
+    Features m_featuresYPlus;
+    Features m_featuresUPlus;
+    Features m_featuresVPlus;
+    Features m_featuresYMinus;
+    Features m_featuresUMinus;
+    Features m_featuresVMinus;
+    float m_averageY;
+    float m_averageU;
+    float m_averageV;
+    std::basic_string<char> fromFeatures (const Features &f) const {
+      std::basic_string<char> s;
+      s.assign (f.size (), (char)0);
+      for (int i = 0; i < f.size (); ++i)
+	{
+	  s[i] = (char)f[i];
+	}
+      return s;
+    }
+    Features toFeatures (const std::basic_string<char> &s) const {
+      Features f;
+      f.assign (s.size (), (unsigned char)0);
+      for (int i = 0; i < s.size (); ++i)
+	{
+	  f[i] = (unsigned char)s[i];
+	}
+      return f;
+    }
   };
 
 };

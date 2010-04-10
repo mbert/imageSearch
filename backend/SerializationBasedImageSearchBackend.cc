@@ -87,6 +87,12 @@ SerializationBasedImageSearchBackend::addImage (const std::string imageName,
 }
 
 void
+SerializationBasedImageSearchBackend::addImage (const ImageFeatures &image)
+{
+  m_scoreTable->appendImage (image);
+}
+
+void
 SerializationBasedImageSearchBackend::save (void)
 {
   try

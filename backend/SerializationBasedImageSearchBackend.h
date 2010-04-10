@@ -17,6 +17,7 @@ namespace ImageSearch
     virtual ~SerializationBasedImageSearchBackend (void);
     void addImage (const std::string imageName,
 		   const int rows, const int cols);
+    void addImage (const ImageFeatures &image);
     void save (void);
 
   protected:

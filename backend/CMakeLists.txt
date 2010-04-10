@@ -6,6 +6,8 @@ ADD_LIBRARY(Backend
 	DbBasedImageSearchBackend.cc
 	SerializationBasedImageSearchBackend.cc
 	ScoreTable.cc
+	UrlPrefixStrategy.cc
+	util.cc
 	BinaryScoreTableSerializer.cc
 	TextScoreTableSerializer.cc
 	PreSelectScoreTable.cc

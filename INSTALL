@@ -10,8 +10,8 @@ Build Prerequisites
 
 - some boost development libs (I have libboost-date-time-dev libboost-dev
   libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev
-  libboost-signals-dev libboost-thread-dev, version 1.40.0 installed,
-  some may not be necessary)
+  libboost-signals-dev libboost-thread-dev, libboost-serialization-dev,
+  version 1.40.0 installed, some may not be necessary)
 
 - libpqxx-dev (I have 2.6.9, but it currently requires patching one of the
   headers)

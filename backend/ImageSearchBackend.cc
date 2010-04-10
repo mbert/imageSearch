@@ -1,6 +1,8 @@
 #include "ImageSearchBackend.h"
 #include "ImageScore.h"
+#include "UrlPrefixStrategy.h"
 #include "macros.h"
+#include "util.h"
 #include "../config.h"
 
 #include <cxxutil/utils.h>
@@ -28,6 +30,7 @@ using namespace ImageSearch;
 
 ScoreTable * ImageSearchBackend::m_scoreTable = NULL;
 
+static URL_PREFIX_STRATEGY_CLASS p_urlPrefixer;
 
 static std::string guessMimeType (const std::string &fileName);
 static std::string tempImageName (const std::string &baseName);
@@ -68,7 +71,8 @@ std::string
 ImageSearchBackend::setImage (const unsigned long imageId)
 {
   const std::string clientName = getImageNameById (imageId);
-  std::string srcPath = m_documentRoot + m_imageDbPrefix + "/" + clientName;
+  std::string prefix = p_urlPrefixer.makePrefix (clientName);
+  std::string srcPath = m_documentRoot + m_imageDbPrefix + prefix + "/" + clientName;
   return setImage (srcPath, clientName);
 }
 
@@ -150,10 +154,12 @@ BLImage
 ImageSearchBackend::p_makeBlImage (const int id, const std::string &fileName,
 				 const std::string &text)
 {
-  std::string thumbNail = m_documentRoot + m_imageDbPrefix + "/thumb_"
+  std::string prefix = p_urlPrefixer.makePrefix (fileName);
+  std::string thumbNail = m_documentRoot + m_imageDbPrefix + prefix
+    + "/thumb_"
     + CxxUtil::itoa (THUMB_ROWS) + "x" + CxxUtil::itoa (THUMB_COLS)
     + "_" + fileName;
-  std::string targetUrl = m_imageDbPrefix + "/" + fileName;
+  std::string targetUrl = m_imageDbPrefix + prefix + "/" + fileName;
   return ImageSearch::BLImage (id, thumbNail, ::guessMimeType (fileName),
 			       text, targetUrl);
 }
@@ -282,9 +288,7 @@ ImageSearchBackend::createImageFeatures (const std::string &path, int rows, int 
 {
   std::auto_ptr<ColorImage> img (new ColorImage ());
   img->read (path.c_str ());
-  size_t pos = path.rfind ("/");
-  std::string fileName ((pos != std::string::npos && pos < path.size () - 1)
-			? path.substr (pos + 1) : path);
+  std::string fileName = Util::baseFileName (path);
 
   std::auto_ptr<ColorImage> scaled (img->fitInto (rows, cols, ef_outerBorder));
   img.reset ();
