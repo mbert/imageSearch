@@ -122,7 +122,7 @@ import (void)
       return rc;
     }
   std::cout << "importer successfully finished, indexed "
-	    << backend.nImages () << " images." << std::endl;
+	    << backend.nImages () << " images to " << DB_FILE << std::endl;
   return rc;
 }
 
