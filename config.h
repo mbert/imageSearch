@@ -10,15 +10,15 @@
 #define THUMB_COLS 250
 
 //#define DB_PREFIX "/images/shirts"
-//#define DB_PREFIX "/images/covers"
-#define DB_PREFIX "/images/dehdabehs"
+#define DB_PREFIX "/images/covers"
+//#define DB_PREFIX "/images/dehdabehs"
 //#define DB_FILE   "../imagedb.txt"
-//#define DB_FILE   "../covers.bin"
-#define DB_FILE   "../imagedb.bin"
+#define DB_FILE   "../covers.bin"
+//#define DB_FILE   "../imagedb.bin"
 //#define SERIALIZER_CLASS TextScoreTableSerializer
 #define SERIALIZER_CLASS BinaryScoreTableSerializer
-//#define URL_PREFIX_STRATEGY_CLASS CoverScanUrlPrefixStrategy
-#define URL_PREFIX_STRATEGY_CLASS FlatUrlPrefixStrategy
+#define URL_PREFIX_STRATEGY_CLASS CoverScanUrlPrefixStrategy
+//#define URL_PREFIX_STRATEGY_CLASS FlatUrlPrefixStrategy
 
 #define DB_IMAGE_COLS 128
 #define DB_IMAGE_ROWS 128

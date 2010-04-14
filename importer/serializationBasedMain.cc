@@ -12,6 +12,8 @@
 #include <stdexcept>
 #include <iostream>
 
+//#include <unistd.h>
+
 using namespace ImageSearch;
 
 BOOST_CLASS_IMPLEMENTATION(Features, boost::serialization::primitive_type)
@@ -123,6 +125,8 @@ import (void)
     }
   std::cout << "importer successfully finished, indexed "
 	    << backend.nImages () << " images to " << DB_FILE << std::endl;
+  //std::cout << "importer finished, sleeping..." << std::endl;
+  //::sleep (10000);
   return rc;
 }
 
@@ -130,7 +134,8 @@ int
 main (void)
 {
   std::cout << "importer start, dumping to " << DB_FILE << std::endl;
-  return import ();
+  int rc = import ();
+  return rc;
 }
 
 
