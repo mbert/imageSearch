@@ -6,20 +6,6 @@ LINK_DIRECTORIES(
 	${IMAGESEARCH_BINARY_DIR}/backend
   )
 
-ADD_EXECUTABLE(dbBasedImporter
-	dbBasedMain.cc
-  )
-
-TARGET_LINK_LIBRARIES(dbBasedImporter
-	Backend
-	wavelet
-	Magick++
-	jpeg
-	CxxUtil
-	pqxx
-	boost_thread-mt
-  ) 
-
 ADD_EXECUTABLE(serializationBasedImporter
 	serializationBasedMain.cc
   )
@@ -30,7 +16,7 @@ TARGET_LINK_LIBRARIES(serializationBasedImporter
 	Magick++
 	jpeg
 	CxxUtil
-	pqxx
-	boost_thread-mt
-	boost_serialization-mt
+	boost_thread
+	boost_serialization
+	boost_signals
   ) 

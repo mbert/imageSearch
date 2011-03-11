@@ -6,10 +6,10 @@ mkThumb() {
   if [ -r $NAME ]; then
     echo "$NAME exists, skipping."
   else
-    SIZE="`identify $i | sed "s/.* \([0-9]\+\)x\([0-9]\+\)+[0-9]\++[0-9]\+ .*/\1 \2/"`"
+    SIZE="`identify $i | sed "s/.* \([0-9][0-9]*\)x\([0-9][0-9]*\)+[0-9][0-9]*+[0-9][0-9]* .*/\1 \2/"`"
     if [ -z "$SIZE" ]; then
       echo "Error, cannot make thumbnail from $i"
-      exit 1
+      #exit 1
     fi
     ROWS=`echo $SIZE | cut -d ' ' -f 1`
     COLS=`echo $SIZE | cut -d ' ' -f 2`

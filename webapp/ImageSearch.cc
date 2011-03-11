@@ -169,9 +169,12 @@ ImageSearchApplication::p_searchByUpload (void)
 void
 ImageSearchApplication::p_searchByImageId (const unsigned long imageId)
 {
-  std::string fileName = m_backend->setImage (imageId);
+  if (imageId < m_backend->nImages ())
+    {
+      std::string fileName = m_backend->setImage (imageId);
 
-  p_afterSearch (fileName);
+      p_afterSearch (fileName);
+    }
 }
 
 

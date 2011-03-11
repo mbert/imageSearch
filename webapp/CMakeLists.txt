@@ -22,7 +22,7 @@ TARGET_LINK_LIBRARIES(imageSearch.wt
 	wt
 	wthttp
 	wtext
-	pqxx
-	boost_thread-mt
-	boost_serialization-mt
+	boost_thread
+	boost_serialization
+	boost_signals
   ) 
