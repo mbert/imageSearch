@@ -131,7 +131,11 @@ Util::dirName (const std::string &path)
     {
       return "";
     }
-  ret.erase (lastDelim, std::string::npos);
+  do
+    {
+      ret.erase (lastDelim, std::string::npos);
+    }
+  while ((lastDelim = ret.rfind ('/')) == ret.size() - 1);
   return ret;
 }
 
