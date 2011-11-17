@@ -179,7 +179,8 @@ ImageSearchBackend::performSearch (void)
       std::auto_ptr<ColorImage> image (new ColorImage ());
       image->read (m_currentTempFile.c_str ());
 
-      m_scoreTable->query (*image, result, false);
+      //m_scoreTable->query (*image, result, false);
+      m_scoreTable->query (*image, result, true);
 
       boost::timer timer;
       p_sortScores (result, sorted);
@@ -299,21 +300,24 @@ ImageSearchBackend::createImageFeatures (const std::string &path, int rows, int 
   //scaled->write ("foo.ppm");
 
   std::auto_ptr<Image> lY (ImageComparison::truncateForLq
-			   (scaled->channel (0), m_nKeptCoeffs, Haar));
+			   (scaled->channel (0), m_nKeptCoeffs,
+                            Haar, ScoreTable::getTransformationType()));
   Features pfY, nfY;
   ::fillFeatureVectors (*lY, pfY, nfY);
   float aY = lY->at (0, 0);
   lY.reset ();
 
   std::auto_ptr<Image> lU (ImageComparison::truncateForLq
-			   (scaled->channel (1), m_nKeptCoeffs, Haar));
+			   (scaled->channel (1), m_nKeptCoeffs,
+                            Haar, ScoreTable::getTransformationType()));
   Features pfU, nfU;
   ::fillFeatureVectors (*lU, pfU, nfU);
   float aU = lU->at (0, 0);
   lU.reset ();
 
   std::auto_ptr<Image> lV (ImageComparison::truncateForLq
-			   (scaled->channel (2), m_nKeptCoeffs, Haar));
+			   (scaled->channel (2), m_nKeptCoeffs,
+                            Haar, ScoreTable::getTransformationType()));
   Features pfV, nfV;
   ::fillFeatureVectors (*lV, pfV, nfV);
   float aV = lV->at (0, 0);

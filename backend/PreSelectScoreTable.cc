@@ -110,7 +110,7 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 	  std::cerr << "score before Y: "
 		    << scores[i].getScore() << std::endl;
 	}
-      difference = (int)(avgY - m_averageY[i]);
+      difference = (int)((avgY - m_averageY[i]) / m_averageColourDividend);
       scores[i].addToScore (m_weightY[0] * (::abs (difference)));
       if (debug && (i == 8337 || i == 9995))
 	{
@@ -119,7 +119,7 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 	  std::cerr << "score before U: "
 		    << scores[i].getScore() << std::endl;
 	}
-      difference = (int)(avgU - m_averageU[i]);
+      difference = (int)((avgU - m_averageU[i]) / m_averageColourDividend);
       scores[i].addToScore (m_weightU[0] * (::abs (difference)));
       if (debug && (i == 8337 || i == 9995))
 	{
@@ -128,7 +128,7 @@ PreSelectScoreTable::p_query (ImageInformation &qY, ImageInformation &qU,
 	  std::cerr << "score before V: "
 		    << scores[i].getScore() << std::endl;
 	}
-      difference = (int)(avgV - m_averageV[i]);
+      difference = (int)((avgV - m_averageV[i]) / m_averageColourDividend);
       scores[i].addToScore (m_weightV[0] * (::abs (difference)));
       if (debug && (i == 8337 || i == 9995))
 	{

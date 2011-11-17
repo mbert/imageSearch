@@ -21,6 +21,11 @@
 //#define URL_PREFIX_STRATEGY_CLASS CoverScanUrlPrefixStrategy
 #define URL_PREFIX_STRATEGY_CLASS FlatUrlPrefixStrategy
 
+//#define AVG_DIVIDEND 1
+#define AVG_DIVIDEND 20
+//#define DECOMP_TYPE STANDARD
+#define DECOMP_TYPE PYRAMID
+
 #define DB_IMAGE_COLS 128
 #define DB_IMAGE_ROWS 128
 

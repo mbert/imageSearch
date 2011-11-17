@@ -2,7 +2,6 @@
 #include "../config.h"
 
 #include <WImage/ColorImage.hh>
-#include <WTools/ImageComparison.hh>
 
 #include <boost/timer.hpp>
 
@@ -14,6 +13,9 @@
 #include <climits>
 
 using namespace ImageSearch;
+
+const float ScoreTable::m_averageColourDividend = AVG_DIVIDEND;
+const decomp ScoreTable::m_trType = DECOMP_TYPE;
 
 #ifdef MY_WEIGHTS
 

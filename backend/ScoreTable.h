@@ -5,6 +5,7 @@
 #include "DBImage.h"
 
 #include <WTools/ImageInformation.hh>
+#include <WTools/ImageComparison.hh>
 
 #include <string>
 #include <memory>
@@ -35,6 +36,7 @@ namespace ImageSearch
     void appendImage (const ImageFeatures &image) { doAppendImage (image); ++m_nImages; }
     virtual std::string getImageNameById (const unsigned long id);
     inline int nImages (void) { return m_nImages; }
+    static inline decomp getTransformationType() { return m_trType; }
   protected:
     virtual void doLoadImages (const ImageFeaturesList &images);
     virtual void doAppendImage (const ImageFeatures &image);
@@ -60,6 +62,8 @@ namespace ImageSearch
     static const float *m_weightY;
     static const float *m_weightU;
     static const float *m_weightV;
+    static const float m_averageColourDividend;
+    static const decomp m_trType;
 
     int getLevel (int i);
     int bin (int y, int x);
