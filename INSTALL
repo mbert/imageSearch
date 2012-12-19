@@ -18,4 +18,7 @@ Build Prerequisites
 
 - libWavelet, current CVS version, can be obtained from sourceforge [1].
 
+- cxxutil, current git version, can be obtained from github [2].
+
 [1] http://sourceforge.net/projects/wavelet/
+[2] http://github.com/mbert/cxxutil
