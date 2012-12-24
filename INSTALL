@@ -22,3 +22,35 @@ Build Prerequisites
 
 [1] http://sourceforge.net/projects/wavelet/
 [2] http://github.com/mbert/cxxutil
+
+
+First steps
+===========
+
+There a couple of steps which need to be taken before the app can be used. 
+
+First: Import images into the database.
+You may use one of the 'import_*.sh' scripts (or a modified copy of one
+of them) in the 'importer' dir. The importer script makes some assumptions
+to where the images are located (see the import scripts). That path must
+correspond to the settings in '/config.h' (don't get confused by the 
+absolute path in the DB_PREFIX macro, it's looked for under 'webapp').
+Thus before running the importer make sure that the setup is correct
+(make the dir names match, move the images to the appropriate dir under
+'webapp' if necessary).
+
+Second: Generate the thumbnails.
+For this there is a script 'mk_thumbnail.sh'.
+To run it, enter the image directory in a Unix shell and do a:
+
+$ ls -1 | grep -v thumb_ | ../mk_thumbnail.sh
+
+This will generate the thumbnail images. It does not matter if you do
+this before or after the import step as the import wrapper script (see
+above) filters the thumbnail pattern out before importing.
+
+Third: Run the app.
+There are several wrapper scripts 'run_*.sh' under 'webapp'. Make sure
+the settings in there correspond with the settings in 'config.h'. Then
+run the web server via one of the scripts. It will then be available
+on your localhost under the given port number.
